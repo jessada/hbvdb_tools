@@ -2,3 +2,10 @@
 src/
 .project
 bin/DB/
+*.log
+blib/
+Makefile
+pm_to_blib
+MYMETA.yml
+*.swp
+*#

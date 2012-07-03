@@ -29,6 +29,7 @@ use constant LOG_FILENAME  => 'bvdb.log';
 use constant INDIVIDUAL_COUNT => 'NI';
 use constant ENTRIES          => 'ENTRIES';
 use constant TAGS             => 'TAGS';
+use constant DB_ID            => 'DB_ID';
 
 =head1 NAME
 
@@ -98,7 +99,7 @@ sub new
     bless $self, ref($class) || $class;
     
     #define location of the database.
-	$$self{db_dir}            = dirname(abs_path($0))."/".DB_DIR unless defined($$self{db_dir});
+    $$self{db_dir}            = dirname(abs_path($0))."/".DB_DIR unless defined($$self{db_dir});
 
     $$self{_bvdb_db_file}     = $$self{db_dir}."/".DB_DB;
     $$self{_bvdb_db_tmp_file} = $$self{db_dir}."/".DB_DB_TMP;
@@ -123,7 +124,7 @@ sub info
     
     my $logger = Log::Log4perl->get_logger("Bvdb");
     
-    $logger->info( @msg );
+    $logger->info( "[info] @msg" );
 }
 
 sub throw
@@ -132,7 +133,7 @@ sub throw
     
     my $logger = Log::Log4perl->get_logger("Bvdb");
     
-    $logger->error( @msg );
+    $logger->error( "[error] @msg" );
     confess @msg,"\n";
 }
 
@@ -144,7 +145,7 @@ sub warn
 
     my $logger = Log::Log4perl->get_logger("Bvdb");
     
-    $logger->warn( @msg );
+    $logger->warn( "[warn] @msg" );
     warn @msg;
 }
 
@@ -175,7 +176,7 @@ sub begin_add_tran
     
     #Prepare for incoming transactions
     $self->load_header();
-    
+
     $$self{transactions}->{active}               = 1;
     $$self{transactions}->{vcf}->{file}          = $args{file};
     $$self{transactions}->{vcf}->{total_samples} = $args{total_samples};
@@ -185,8 +186,8 @@ sub begin_add_tran
     
     $self->_init_tmp_db();
     
-	#Fetch the first record from the database
-	$$self{current_variant} = $self->_next_record();
+    #Fetch the first record from the database
+    $$self{current_variant} = $self->_next_record();
 }
 
 sub _init_tmp_db
@@ -228,6 +229,8 @@ sub _init_tmp_db
 		}
 		print {$$self{tmp_db_fh}} "##".TAGS."=".join(',', sort @{$$self{header}->{tags}})."\n";
 	}
+
+	print {$$self{tmp_db_fh}} "##".DB_ID."=".$$self{header}->{db_id}."\n";
 }
 
 =head2 load_header
@@ -243,15 +246,23 @@ sub load_header()
 {
     my ($self) = @_;
 	
-	if ( -e $$self{_bvdb_db_file}) {
-	    open $$self{db_fh}, "<", $$self{_bvdb_db_file} or die $!;
-	    $self->_parse_header();
-	} else {
-		$$self{db_fh}                   = undef;
-	    $$self{header}->{total_samples} = 0;
-	    $$self{header}->{entries}       = [];
-	    $$self{header}->{tags}          = [];
-	}
+    if ( -e $$self{_bvdb_db_file}) {
+        open $$self{db_fh}, "<", $$self{_bvdb_db_file} or die $!;
+        $self->_parse_header();
+    } else {
+        $$self{db_fh}                   = undef;
+        $$self{header}->{total_samples} = 0;
+        $$self{header}->{entries}       = [];
+        $$self{header}->{tags}          = [];
+        $$self{header}->{db_id}         = "";
+    }
+
+    #Assign database id to the one that still doesn't have
+    if ( ! $$self{header}->{db_id} ) {
+        my $mac = `/sbin/ifconfig eth0 | grep HWaddr | awk '{ print \$NF}' | sed 's/://g'`;
+        $mac =~ s/\s+$//;
+        $$self{header}->{db_id}         = $mac.time();
+    }
 }
 
 sub _parse_header
@@ -303,6 +314,8 @@ sub _parse_header_line
 		@{$$self{header}->{entries}} = split(/,/, $value);
 	} elsif ( $key eq TAGS) {
 		@{$$self{header}->{tags}} = split(/,/, $value);
+	} elsif ( $key eq DB_ID) {
+		$$self{header}->{db_id} = $value;
 	}
 
     return 1;
@@ -406,12 +419,21 @@ sub _next_record
     my ($self) = @_;
     
     my $line = $self->_next_line();
+
+    #if no more records
     if ( !defined($line)) {
     	return undef;
     }
     
     chomp($line);
     my @array = split(/\t/, $line);
+
+    #if blank line found
+    if ( $array[1] == "") {
+        return $self->_next_record();
+    }
+
+    #parse database content
     my $key   = (looks_like_number($array[0]))? sprintf("%02d", $array[0]):$array[0];
     $key .= "|".sprintf("%012s",$array[1])."|".$array[3];
     return {key=>$key, CHROM=>$array[0], POS=>$array[1], REF=>$array[2], ALT=>$array[3], total=>$array[4], tags=>$array[5]};
@@ -553,7 +575,7 @@ sub merge_databases
 	if (! exists($$self{header} )) {
 		$self->load_header();
 	}
-	
+
 	#Load headers from input Bvdbs
 	for my $db_dir (@db_dirs) {
 		my $bvdb = Bvdb->new(db_dir=>$db_dir);

@@ -1,5 +1,5 @@
 ##NI=1
-##ENTRIES=case_bvd_add_01_1.vcf
+##ENTRIES=case_bvd_add_06_1.vcf
 ##TAGS=colon_cancer,lung_cancer
 ##DB_ID=d4bed912c2631341303434
 1	866319	G	A	2	colon_cancer,lung_cancer=2

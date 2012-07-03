@@ -1,7 +1,7 @@
 ##NI=8
 ##ENTRIES=case_bvd_add_04_1.vcf,case_bvd_add_04_2.vcf,case_bvd_add_04_3.vcf,case_bvd_add_04_4.vcf,case_bvd_add_04_5.vcf,case_bvd_add_04_6.vcf,case_bvd_add_04_7.vcf,case_bvd_add_04_8.vcf
 ##TAGS=colon_cancer,lung_cancer,prostate_cancer
-##DB_ID=d4bed912c2631341306030
+##DB_ID=d4bed912c2631341303434
 10	800001	G	A	16	colon_cancer,lung_cancer=4:lung_cancer=4:prostate_cancer=4
 10	800002	G	A	14	colon_cancer,lung_cancer=4:lung_cancer=4:prostate_cancer=4
 10	800003	G	A	14	colon_cancer,lung_cancer=4:lung_cancer=4:prostate_cancer=2

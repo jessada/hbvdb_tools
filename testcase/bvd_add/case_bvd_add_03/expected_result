@@ -1,6 +1,7 @@
 ##NI=6
 ##ENTRIES=case_bvd_add_03_1.vcf,case_bvd_add_03_2.vcf,case_bvd_add_03_3.vcf,case_bvd_add_03_4.vcf,case_bvd_add_03_5.vcf,case_bvd_add_03_6.vcf
 ##TAGS=colon_cancer,lung_cancer
+##DB_ID=d4bed912c2631341306029
 1	811510	A	C	2	colon_cancer,lung_cancer=2
 1	811512	A	C	2	colon_cancer,lung_cancer=2
 1	811616	A	G	2	colon_cancer,lung_cancer=2
