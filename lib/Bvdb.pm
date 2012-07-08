@@ -230,7 +230,18 @@ sub _init_tmp_db
 		print {$$self{tmp_db_fh}} "##".TAGS."=".join(',', sort @{$$self{header}->{tags}})."\n";
 	}
 
-	print {$$self{tmp_db_fh}} "##".DB_ID."=".$$self{header}->{db_id}."\n";
+	if (exists($args{db_id})) {
+	    print {$$self{tmp_db_fh}} "##".DB_ID."=".$args{db_id}."\n";
+	} else {
+            #If no database id
+            if ( ! $$self{header}->{db_id} ) {
+                my $mac = `/sbin/ifconfig eth0 | grep HWaddr | awk '{ print \$NF}' | sed 's/://g'`;
+                $mac =~ s/\s+$//;
+	        print {$$self{tmp_db_fh}} "##".DB_ID."=".$mac.time()."\n";
+            } else {
+	        print {$$self{tmp_db_fh}} "##".DB_ID."=".$$self{header}->{db_id}."\n";
+            }
+	}
 }
 
 =head2 load_header
@@ -254,14 +265,7 @@ sub load_header()
         $$self{header}->{total_samples} = 0;
         $$self{header}->{entries}       = [];
         $$self{header}->{tags}          = [];
-        $$self{header}->{db_id}         = "";
-    }
-
-    #Assign database id to the one that still doesn't have
-    if ( ! $$self{header}->{db_id} ) {
-        my $mac = `/sbin/ifconfig eth0 | grep HWaddr | awk '{ print \$NF}' | sed 's/://g'`;
-        $mac =~ s/\s+$//;
-        $$self{header}->{db_id}         = $mac.time();
+        $$self{header}->{db_id}   = "";
     }
 }
 
