@@ -28,7 +28,7 @@ sub error
     if ( scalar @msg ) { croak join('',@msg); }
     die
         "About: Export variant frequencies from Background Variation Database, default in ANNOVAR generic format.\n",
-        "Usage: bvd-get [OPTIONS]\n",
+        "Usage: bvd-get.pl [OPTIONS]\n",
         "Options:\n",
         "   -h, -?, --help                  This help message.\n",
         "   -d, --database <db_path>        Specific target database. Default is 'DB'\n",
@@ -118,10 +118,12 @@ sub output_vcf
             $out{QUAL}  = '.';
             #$out{ALT}   = [];
             push @{$out{ALT}}, $variant->{ALT};
+            # push @{$out{ALT}}, 'Z';
             $info{BVDMAF} = $variant->{fq};
             $out{INFO} = { %info }; 
             #$out{FORMAT} = [];
             print $vcf_out->format_line(\%out);
+            # print $variant->{record_ref}, "\n";
             # print "$variant->{CHROM} $variant->{POS} $len $variant->{REF} $variant->{ALT} $variant->{fq}\n";
         }
     }

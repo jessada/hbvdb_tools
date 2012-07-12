@@ -11,3 +11,5 @@ MYMETA.yml
 *#
 *.swo
 *.swn
+testcase/test_tools/
+testcase/bin/

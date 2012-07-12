@@ -113,7 +113,7 @@ sub new
     $$self{buffer}         = [];       # buffer stores the lines in the reverse order
     $$self{save_diskspace} = 0 unless defined($$self{save_diskspace}); 
     
-    $self->info("Connect to database : $$self{_bvdb_db_file}.\n");
+    $self->info("Connect to database : $$self{_bvdb_db_file}.");
     
     return $self;
 }
@@ -124,7 +124,7 @@ sub info
     
     my $logger = Log::Log4perl->get_logger("Bvdb");
     
-    $logger->info( "[info] @msg" );
+    $logger->info( "INFO: @msg\n" );
 }
 
 sub throw
@@ -133,8 +133,8 @@ sub throw
     
     my $logger = Log::Log4perl->get_logger("Bvdb");
     
-    $logger->error( "[error] @msg" );
-    confess @msg,"\n";
+    $logger->error( "ERROR: @msg\n" );
+    confess "ERROR: @msg\n";
 }
 
 sub warn
@@ -145,8 +145,8 @@ sub warn
 
     my $logger = Log::Log4perl->get_logger("Bvdb");
     
-    $logger->warn( "[warn] @msg" );
-    warn @msg;
+    $logger->warn( "WARNING: @msg\n" );
+    warn "WARNING: @msg\n";
 }
 
 =head2 begin_add_tran
@@ -166,13 +166,13 @@ sub begin_add_tran
 {
     my ($self, %args) = @_;
     
-    if ( !defined($args{file})) { $self->throw("Undefined value passed to begin_add_tran(file=>undef).\n"); }
-    if ( ! -e $args{file} ) { $self->throw("invalid file passed to begin_add_tran(file=>undef).\n"); }
-    if ( $self->vcf_exist(%args)) { $self->throw("Content of ".$args{file}." was already in the database.\n"); }
+    if ( !defined($args{file})) { $self->throw("Undefined value passed to begin_add_tran(file=>undef)."); }
+    if ( ! -e $args{file} ) { $self->throw("invalid file passed to begin_add_tran(file=>undef)."); }
+    if ( $self->vcf_exist(%args)) { $self->throw("Content of ".$args{file}." was already in the database."); }
     
-    if ( !defined($args{total_samples}) ) { $self->throw("Undefined value passed to begin_add_tran(total_samples=>undef).\n"); }
+    if ( !defined($args{total_samples}) ) { $self->throw("Undefined value passed to begin_add_tran(total_samples=>undef)."); }
 
-    if ( $$self{transactions}->{active} ) { $self->throw("Currently, there are other active transactions.\n"); }
+    if ( $$self{transactions}->{active} ) { $self->throw("Currently, there are other active transactions."); }
     
     #Prepare for incoming transactions
     $self->load_header();
@@ -185,6 +185,13 @@ sub begin_add_tran
     }
     
     $self->_init_tmp_db();
+
+    #Initial new REF count
+    $$self{_last_db_position_key}    = undef;
+    $$self{_last_args_reference_key} = undef;
+    $$self{_db_reference_key_found}  = undef;
+    $$self{total_new_REF_count}      = 0;
+    $$self{_tmp_new_REF_count}       = 0;
     
     #Fetch the first record from the database
     $$self{current_variant} = $self->_next_record();
@@ -365,57 +372,107 @@ sub add_variant
     my @tags_array;
     my $tags;
     
-    if ( !$$self{transactions}->{active} ) {$self->throw("'begin_tran' haven't been called.\n");}
+    if ( !$$self{transactions}->{active} ) {$self->throw("'begin_tran' haven't been called.");}
     
-    my $args_key = (looks_like_number($args{CHROM}))? sprintf("%02d", $args{CHROM}):$args{CHROM};
-    $args_key .= "|".sprintf("%012s",$args{POS})."|".$args{ALT};
+    #create key from args
+    my $chromosome = (looks_like_number($args{CHROM}))? sprintf("%02d", $args{CHROM}):$args{CHROM};
+    my $args_variant_key   = $chromosome."|".sprintf("%012s",$args{POS})."|".$args{REF}."|".$args{ALT};
+    my $args_reference_key = $chromosome."|".sprintf("%012s",$args{POS})."|".$args{REF};
+    my $args_position_key  = $chromosome."|".sprintf("%012s",$args{POS});
     
+
     #if the key in the database is smaller than the key in vcf file
-    while ( ($$self{current_variant}->{key}) && 
-			($$self{current_variant}->{key} lt $args_key)
-		  ) { 
-    	print {$$self{tmp_db_fh}} "$$self{current_variant}->{CHROM}\t$$self{current_variant}->{POS}\t$$self{current_variant}->{REF}\t$$self{current_variant}->{ALT}\t$$self{current_variant}->{total}\t$$self{current_variant}->{tags}\n";
-		$$self{current_variant} = $self->_next_record();
+    while ( ($$self{current_variant}->{db_variant_key}) && 
+            ($$self{current_variant}->{db_variant_key} lt $args_variant_key)
+          ) {
+        #Count new REF if any 
+        $self->_count_new_REF(\%args, $args_reference_key, $args_position_key);
+
+        #Write the variant record to the temporary database
+        print {$$self{tmp_db_fh}} "$$self{current_variant}->{CHROM}\t$$self{current_variant}->{POS}\t$$self{current_variant}->{REF}\t$$self{current_variant}->{ALT}\t$$self{current_variant}->{total}\t$$self{current_variant}->{tags}\n";
+        $$self{current_variant} = $self->_next_record();
     }
     
     #if both key are equal
-    if ( $$self{current_variant}->{key} eq $args_key) {
+    if ( $$self{current_variant}->{db_variant_key} eq $args_variant_key) {
     	my $result_tags;
     	my $total = $$self{current_variant}->{total} + $args{allele_count};
     	if (! $$self{transactions}->{vcf}->{tags}) {
 			$result_tags = $$self{current_variant}->{tags}; 
     	} else {
-	    	if ($$self{current_variant}->{tags} eq ".") {
-    			$result_tags = "$$self{transactions}->{vcf}->{tags}=$args{allele_count}";
-	    	} else {
-		    	my @array = split(/:/, $$self{current_variant}->{tags});
-		    	my %hash;
+            if ($$self{current_variant}->{tags} eq ".") {
+                $result_tags = "$$self{transactions}->{vcf}->{tags}=$args{allele_count}";
+            } else {
+                my @array = split(/:/, $$self{current_variant}->{tags});
+                my %hash;
 		    	
-		    	for (my $i=0; $i<=$#array; $i++) {
-		    		my ($tags, $count) = split(/=/, $array[$i]);
-		    		if ($tags eq $$self{transactions}->{vcf}->{tags}){
-			    		$hash{$tags} = $count+$args{allele_count};
-		    		} else {
-		    			$hash{$tags} = $count;
-		    		} 
-		    		push (@tags_array, "$tags=$hash{$tags}");
-		    	}
-		    	if ((!$hash{$$self{transactions}->{vcf}->{tags}}) && ($$self{transactions}->{vcf}->{tags})) {
-		    		push (@tags_array, "$$self{transactions}->{vcf}->{tags}=$args{allele_count}");
-		    	}
-		    	$result_tags = join(':', sort @tags_array);
-	    	}
-    	}
+                for (my $i=0; $i<=$#array; $i++) {
+                    my ($tags, $count) = split(/=/, $array[$i]);
+                    if ($tags eq $$self{transactions}->{vcf}->{tags}){
+                        $hash{$tags} = $count+$args{allele_count};
+                    } else {
+                        $hash{$tags} = $count;
+                    } 
+                    push (@tags_array, "$tags=$hash{$tags}");
+                }
+                if ((!$hash{$$self{transactions}->{vcf}->{tags}}) && ($$self{transactions}->{vcf}->{tags})) {
+                    push (@tags_array, "$$self{transactions}->{vcf}->{tags}=$args{allele_count}");
+                }
+                $result_tags = join(':', sort @tags_array);
+            }
+        }
     	
-	    print {$$self{tmp_db_fh}} "$args{CHROM}\t$args{POS}\t$args{REF}\t$args{ALT}\t$total\t$result_tags\n";
-		$$self{current_variant} = $self->_next_record();
-		return 1;
+        #Count new REF if any 
+        $self->_count_new_REF(\%args, $args_reference_key, $args_position_key);
+
+        #Write the variant record to the temporary database
+        print {$$self{tmp_db_fh}} "$args{CHROM}\t$args{POS}\t$args{REF}\t$args{ALT}\t$total\t$result_tags\n";
+        $$self{current_variant} = $self->_next_record();
+        return 1;
     }
 
-    #Either it's the end of file or it's a brand new database or it's just because the key in database is greater than that in vcf file
+    #Count new REF if any 
+    $self->_count_new_REF(\%args, $args_reference_key, $args_position_key);
+
+    #Either it's the end of the database or it's a brand new database or it's just because the key in database is greater than that in vcf file
     #so the variants will be directly added to database.
     $tags = ($$self{transactions}->{vcf}->{tags})? "$$self{transactions}->{vcf}->{tags}=$args{allele_count}" : "."; 
     print {$$self{tmp_db_fh}} "$args{CHROM}\t$args{POS}\t$args{REF}\t$args{ALT}\t$args{allele_count}\t$tags\n";
+}
+
+sub _count_new_REF
+{
+    my ($self, $args_variant, $args_reference_key, $args_position_key) = @_;
+    
+    #Count new REF
+    if ($$self{current_variant}->{db_position_key} ne $$self{_last_db_position_key}) {
+        print "hello B\tcount:$$self{_tmp_new_REF_count}\n";
+        $$self{total_new_REF_count}         += $$self{_tmp_new_REF_count}; 
+        $$self{_db_reference_key_found}     = undef;
+        $$self{_tmp_new_REF_count}          = 0;
+        print "total_new_REF_count : $$self{total_new_REF_count}\n";
+    }
+    print "**************************************************************************************************************************************************\n";
+    print "vcf>>\t$args_variant->{CHROM}\t$args_variant->{POS}\t$args_variant->{REF}\t$args_variant->{ALT}\t$args_reference_key\t$args_position_key\n";
+    print "db>>\t$$self{current_variant}->{CHROM}\t$$self{current_variant}->{POS}\t$$self{current_variant}->{REF}\t$$self{current_variant}->{ALT}\t$$self{current_variant}->{db_reference_key}\t$$self{current_variant}->{db_position_key}\n";
+    print "$$self{_last_db_position_key}\n";
+    print "**************************************************************************************************************************************************\n";
+    if ($$self{current_variant}->{db_position_key} eq $args_position_key) {
+        if ($$self{current_variant}->{db_reference_key} eq $args_reference_key) {
+            print "hello C\tcount:$$self{_tmp_new_REF_count}\n";
+            $$self{_tmp_new_REF_count}       = 0;
+            $$self{_db_reference_key_found}  = 1;
+        } elsif ( (! $$self{_db_reference_key_found}) &&
+                  ($$self{_last_args_reference_key} ne $args_reference_key)
+                ) {
+            print "hello A1\tcount:$$self{_tmp_new_REF_count}\n";
+            $$self{_tmp_new_REF_count}      += 1;
+            $$self{_last_args_reference_key} = $args_reference_key;
+            print "hello A2\tcount:$$self{_tmp_new_REF_count}\n";
+        }
+        $$self{_last_db_position_key}       = $args_position_key;
+    } 
+    $$self{_last_db_position_key} = $$self{current_variant}->{db_position_key};
 }
 
 sub _next_record
@@ -437,10 +494,18 @@ sub _next_record
         return $self->_next_record();
     }
 
-    #parse database content
-    my $key   = (looks_like_number($array[0]))? sprintf("%02d", $array[0]):$array[0];
-    $key .= "|".sprintf("%012s",$array[1])."|".$array[3];
-    return {key=>$key, CHROM=>$array[0], POS=>$array[1], REF=>$array[2], ALT=>$array[3], total=>$array[4], tags=>$array[5]};
+    #get chromosome
+    my $chromosome = (looks_like_number($array[0]))? sprintf("%02d", $array[0]):$array[0];
+
+    #unique variant key - usually, the variant with this key should only appear once in the database and variant file.
+    my $db_variant_key = $chromosome."|".sprintf("%012s",$array[1])."|".$array[2]."|".$array[3];
+
+    #unique reference key - this key can be used to implement multiallele record.
+    my $db_reference_key = $chromosome."|".sprintf("%012s",$array[1])."|".$array[2];
+
+    #unique position key - this key can be used to identify if it is likely to has more than 2 major version of reference in the database/database
+    my $db_position_key = $chromosome."|".sprintf("%012s",$array[1]);
+    return {db_variant_key=>$db_variant_key, db_reference_key=>$db_reference_key, db_position_key=>$db_position_key, CHROM=>$array[0], POS=>$array[1], REF=>$array[2], ALT=>$array[3], total=>$array[4], tags=>$array[5]};
 }
 
 =head2 commit_add
@@ -460,7 +525,7 @@ sub commit_add
     my ($self) = @_;
 
     if (!$$self{transactions}->{active}) {
-    	$self->warn("No transaction to commit.\n"); 
+    	$self->warn("No transaction to commit."); 
     	return 0;
     }
 
@@ -469,22 +534,35 @@ sub commit_add
     	print {$$self{tmp_db_fh}} "$$self{current_variant}->{CHROM}\t$$self{current_variant}->{POS}\t$$self{current_variant}->{REF}\t$$self{current_variant}->{ALT}\t$$self{current_variant}->{total}\t$$self{current_variant}->{tags}\n";
     	$$self{current_variant} = $self->_next_record();
     }
+
+    #If there are still new REFs uncount, count them
+    if ($$self{_tmp_new_REF_count}) {
+        print "hello B\tcount:$$self{_tmp_new_REF_count}\n";
+        $$self{total_new_REF_count}         += $$self{_tmp_new_REF_count}; 
+        $$self{_db_reference_key_found}     = undef;
+        $$self{_tmp_new_REF_count}          = 0;
+        print "total_new_REF_count : $$self{total_new_REF_count}\n";
+    }
     
     close $$self{tmp_db_fh};
     
     if (! $$self{save_diskspace}) {
-	    $self->_backup();
+        $self->_backup();
     }
     
-	#Save change to the real database
+    #Save change to the real database
     $self->_add_chksum();
-   	rename($$self{_bvdb_db_tmp_file}, $$self{_bvdb_db_file}) or $self->warn("Cannot save change to database: $!\n");
+    rename($$self{_bvdb_db_tmp_file}, $$self{_bvdb_db_file}) or $self->warn("Cannot save change to database: $!");
    	
-	$self->info("Changes have been committed to the database $$self{_bvdb_db_file}\n");
+    $self->info("Changes have been committed to the database $$self{_bvdb_db_file}");
 
-   	$$self{transactions}->{active} = 0;
+    if ($$self{total_new_REF_count}) {
+        $self->warn("Alleles with invalid reference might already be inserted!!!. $$self{total_new_REF_count} new REF have been added to the database.");
+    }
 
-	return 1;
+    $$self{transactions}->{active} = 0;
+
+    return 1;
 }
 
 sub _add_chksum
@@ -692,9 +770,9 @@ sub merge_databases
 		}
 		close $chk_sum_file;
     }
-   	rename($$self{_bvdb_db_tmp_file}, $$self{_bvdb_db_file}) or $self->warn("Cannot save change to database: $!\n");
+   	rename($$self{_bvdb_db_tmp_file}, $$self{_bvdb_db_file}) or $self->warn("Cannot save change to database: $!");
 
-	$self->info("Changes have been committed to the database $$self{_bvdb_db_file}\n");
+	$self->info("Changes have been committed to the database $$self{_bvdb_db_file}");
 }
 
 =head2 close
@@ -714,7 +792,7 @@ sub close
     my ($self) = @_;
     
     if ($$self{transactions}->{active}) {
-    	$self->warn("Transactions haven't been commited.\n"); 
+    	$self->warn("Transactions haven't been commited."); 
     	return 0;
     }
 
@@ -730,14 +808,14 @@ sub _backup
     #Backup the old chksum if it's existed
     my $backup_chksum_filename = $$self{_bvdb_chksum_file}.strftime("%Y%m%d%H%M%S", localtime);
 	if ( -e $$self{_bvdb_chksum_file}) {
-		copy($$self{_bvdb_chksum_file}, $backup_chksum_filename) or $self->warn("Cannot backup chksum: $!\n");		
-		$self->info("The old chksum has been backup. The backup file is $backup_chksum_filename\n");
+		copy($$self{_bvdb_chksum_file}, $backup_chksum_filename) or $self->warn("Cannot backup chksum: $!");		
+		$self->info("The old chksum has been backup. The backup file is $backup_chksum_filename");
 	}
     #Backup the old database if it's existed
     my $backup_db_filename = $$self{_bvdb_db_file}.strftime("%Y%m%d%H%M%S", localtime);
 	if ( -e $$self{_bvdb_db_file}) {
-		copy($$self{_bvdb_db_file}, $backup_db_filename) or $self->warn("Cannot backup database: $!\n");		
-		$self->info("The old database has been backup. The backup file is $backup_db_filename\n");
+		copy($$self{_bvdb_db_file}, $backup_db_filename) or $self->warn("Cannot backup database: $!");		
+		$self->info("The old database has been backup. The backup file is $backup_db_filename");
 	}
 }
 
@@ -790,7 +868,7 @@ sub check_databases_duplicated
     my %has_chksum;
     
     for my $db_dir (@db_dirs) {
-	    if ( ! -e $db_dir) { $self->throw("$db_dir does not exist!!.\n"); }
+	    if ( ! -e $db_dir) { $self->throw("$db_dir does not exist!!."); }
     }
     
     #Read list of chksums from local database if exist
@@ -809,7 +887,7 @@ sub check_databases_duplicated
 		while( my $line = <$chk_sum>)  {
 			chomp($line);
 			if ( exists($has_chksum{$line})) {
-				$self->throw("Some of the content from $db_dir are duplicated with some from other databases.\n"); 
+				$self->throw("Some of the content from $db_dir are duplicated with some from other databases."); 
 			}
 			$has_chksum{$line} = 1;
 		}
@@ -823,7 +901,7 @@ sub END
 	my ($self) = @_;
 	
     if ($$self{transactions}->{active}) {
-    	$self->warn("'commit_add' haven't been called.\n"); 
+    	$self->warn("'commit_add' haven't been called."); 
     	return 0;
     }
 }

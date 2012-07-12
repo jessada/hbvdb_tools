@@ -26,7 +26,7 @@ sub error
     if ( scalar @msg ) { croak join('',@msg); }
     die
         "About: Add variant frequencies to Background Variation Database, one vcf file at a time.\n",
-        "Usage: bvd-add [OPTIONS] file.vcf\n",
+        "Usage: bvd-add.pl [OPTIONS] file.vcf\n",
         "Options:\n",
         "   -h, -?, --help                  This help message.\n",
         "   -d, --database <db_path>        Specific target database. Default is DB\n",
