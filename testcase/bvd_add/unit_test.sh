@@ -19,5 +19,14 @@ $scriptdir/case_bvd_add_14/validate_result.sh
 $scriptdir/case_bvd_add_15/validate_result.sh
 $scriptdir/case_bvd_add_16/validate_result.sh
 $scriptdir/case_bvd_add_17/validate_result.sh
+$scriptdir/case_bvd_add_18/validate_result.sh
+$scriptdir/case_bvd_add_19/validate_result.sh
+$scriptdir/case_bvd_add_20/validate_result.sh
+$scriptdir/case_bvd_add_21/validate_result.sh
+$scriptdir/case_bvd_add_22/validate_result.sh
+$scriptdir/case_bvd_add_23/validate_result.sh
+$scriptdir/case_bvd_add_24/validate_result.sh
+$scriptdir/case_bvd_add_25/validate_result.sh
+$scriptdir/case_bvd_add_26/validate_result.sh
 
 

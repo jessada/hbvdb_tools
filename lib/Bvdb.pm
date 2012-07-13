@@ -18,18 +18,19 @@ use vars qw/@ISA @EXPORT/;
 @ISA = qw/Exporter/;
 @EXPORT = qw/validate_bvdb/;
 
-use constant DB_DIR        => 'DB';
+use constant DEFAULT_DB_DIR    => 'DB';
+use constant DEFAULT_BUILD_VER => 'hg19';
 
-use constant DB_DB         => 'bvdb';
-use constant DB_DB_TMP     => 'bvdb_tmp';
-use constant DB_CHKSUM     => 'bvdb_chksum';
+use constant DB_DB             => 'bvdb';
+use constant DB_DB_TMP         => 'bvdb_tmp';
+use constant DB_CHKSUM         => 'bvdb_chksum';
 
-use constant LOG_FILENAME  => 'bvdb.log';
+use constant LOG_FILENAME      => 'bvdb.log';
 
-use constant INDIVIDUAL_COUNT => 'NI';
-use constant ENTRIES          => 'ENTRIES';
-use constant TAGS             => 'TAGS';
-use constant DB_ID            => 'DB_ID';
+use constant INDIVIDUAL_COUNT  => 'NI';
+use constant ENTRIES           => 'ENTRIES';
+use constant TAGS              => 'TAGS';
+use constant DB_ID             => 'DB_ID';
 
 =head1 NAME
 
@@ -99,7 +100,7 @@ sub new
     bless $self, ref($class) || $class;
     
     #define location of the database.
-    $$self{db_dir}            = dirname(abs_path($0))."/".DB_DIR unless defined($$self{db_dir});
+    $$self{db_dir}            = dirname(abs_path($0))."/".DEFAULT_DB_DIR unless defined($$self{db_dir});
 
     $$self{_bvdb_db_file}     = $$self{db_dir}."/".DB_DB;
     $$self{_bvdb_db_tmp_file} = $$self{db_dir}."/".DB_DB_TMP;
@@ -446,29 +447,19 @@ sub _count_new_REF
     
     #Count new REF
     if ($$self{current_variant}->{db_position_key} ne $$self{_last_db_position_key}) {
-        print "hello B\tcount:$$self{_tmp_new_REF_count}\n";
         $$self{total_new_REF_count}         += $$self{_tmp_new_REF_count}; 
         $$self{_db_reference_key_found}     = undef;
         $$self{_tmp_new_REF_count}          = 0;
-        print "total_new_REF_count : $$self{total_new_REF_count}\n";
     }
-    print "**************************************************************************************************************************************************\n";
-    print "vcf>>\t$args_variant->{CHROM}\t$args_variant->{POS}\t$args_variant->{REF}\t$args_variant->{ALT}\t$args_reference_key\t$args_position_key\n";
-    print "db>>\t$$self{current_variant}->{CHROM}\t$$self{current_variant}->{POS}\t$$self{current_variant}->{REF}\t$$self{current_variant}->{ALT}\t$$self{current_variant}->{db_reference_key}\t$$self{current_variant}->{db_position_key}\n";
-    print "$$self{_last_db_position_key}\n";
-    print "**************************************************************************************************************************************************\n";
     if ($$self{current_variant}->{db_position_key} eq $args_position_key) {
         if ($$self{current_variant}->{db_reference_key} eq $args_reference_key) {
-            print "hello C\tcount:$$self{_tmp_new_REF_count}\n";
             $$self{_tmp_new_REF_count}       = 0;
             $$self{_db_reference_key_found}  = 1;
         } elsif ( (! $$self{_db_reference_key_found}) &&
                   ($$self{_last_args_reference_key} ne $args_reference_key)
                 ) {
-            print "hello A1\tcount:$$self{_tmp_new_REF_count}\n";
             $$self{_tmp_new_REF_count}      += 1;
             $$self{_last_args_reference_key} = $args_reference_key;
-            print "hello A2\tcount:$$self{_tmp_new_REF_count}\n";
         }
         $$self{_last_db_position_key}       = $args_position_key;
     } 
@@ -537,11 +528,9 @@ sub commit_add
 
     #If there are still new REFs uncount, count them
     if ($$self{_tmp_new_REF_count}) {
-        print "hello B\tcount:$$self{_tmp_new_REF_count}\n";
         $$self{total_new_REF_count}         += $$self{_tmp_new_REF_count}; 
         $$self{_db_reference_key_found}     = undef;
         $$self{_tmp_new_REF_count}          = 0;
-        print "total_new_REF_count : $$self{total_new_REF_count}\n";
     }
     
     close $$self{tmp_db_fh};
