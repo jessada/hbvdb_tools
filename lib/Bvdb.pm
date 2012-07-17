@@ -12,8 +12,8 @@ use Scalar::Util qw(looks_like_number);
 use File::Copy;
 use POSIX qw( strftime );
 use Log::Log4perl qw(:easy); 
-use Exporter;
 
+use Exporter;
 use vars qw/@ISA @EXPORT/;
 @ISA = qw/Exporter/;
 @EXPORT = qw/validate_bvdb/;
@@ -31,6 +31,20 @@ use constant INDIVIDUAL_COUNT  => 'NI';
 use constant ENTRIES           => 'ENTRIES';
 use constant TAGS              => 'TAGS';
 use constant DB_ID             => 'DB_ID';
+
+my @__buildver_configuration = @{__get_buildver_configuration()};
+
+sub __get_buildver_configuration
+{
+    my $hash1 = {name=>'hg18',Second=>'abcd'};
+    my $hash2 = {name=>'hg19',Second=>'sgvh'};
+    #my $val1 = "15";
+    #my $val2 = "35";
+    #my $val3 = "24";
+    my $res = [$hash1, $hash2];
+
+    return $res;
+}
 
 =head1 NAME
 
@@ -81,6 +95,41 @@ sub validate_bvdb
 	#check if it has chksum file
 	if (! -e $db_dir."/".DB_CHKSUM) { confess "$db_dir is invalid database directory : No chksum file.\n";	}	
 	return 1;
+}
+
+=head2 valid_buildver
+
+    About   : Validates the Background Variation Database.
+    Usage   : perl -MBvdb -e validate_bvdb DATABASE     # (from the command line)
+              validate('DATABASE');                     # (from a script)
+    Args    : Database directory that store the database file.
+
+=cut
+
+sub valid_buildver
+{
+    my ($buildver) = @_;
+
+    foreach my $buildver_hash (@__buildver_configuration) {
+        if ( $buildver_hash->{name} eq $buildver) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+=head2 get_default_buildver
+
+    About   : Validates the Background Variation Database.
+    Usage   : perl -MBvdb -e validate_bvdb DATABASE     # (from the command line)
+              validate('DATABASE');                     # (from a script)
+    Args    : Database directory that store the database file.
+
+=cut
+
+sub get_default_buildver
+{
+    return DEFAULT_BUILD_VER;
 }
 
 =head1 SUBROUTINES/METHODS
@@ -202,54 +251,54 @@ sub _init_tmp_db
 {
     my ($self, %args) = @_;
 	
-	open $$self{tmp_db_fh}, ">", $$self{_bvdb_db_tmp_file} or die $!;
+    open $$self{tmp_db_fh}, ">", $$self{_bvdb_db_tmp_file} or die $!;
 
-	if (exists($args{total_samples})) {
-		print {$$self{tmp_db_fh}} "##".INDIVIDUAL_COUNT."=".$args{total_samples}."\n";
-	} else {
-		print {$$self{tmp_db_fh}} "##".INDIVIDUAL_COUNT."=".($$self{header}->{total_samples}+$$self{transactions}->{vcf}->{total_samples})."\n";
-	}
+    if (exists($args{total_samples})) {
+        print {$$self{tmp_db_fh}} "##".INDIVIDUAL_COUNT."=".$args{total_samples}."\n";
+    } else {
+        print {$$self{tmp_db_fh}} "##".INDIVIDUAL_COUNT."=".($$self{header}->{total_samples}+$$self{transactions}->{vcf}->{total_samples})."\n";
+    }
 
-	if (exists($args{entries})) {
-		print {$$self{tmp_db_fh}} "##".ENTRIES."=".join(',', sort @{$args{entries}})."\n";
-	} else {
-		push (@{$$self{header}->{entries}}, basename($$self{transactions}->{vcf}->{file}));
-		print {$$self{tmp_db_fh}} "##".ENTRIES."=".join(',', sort @{$$self{header}->{entries}})."\n";
-	}
-	
-	if (exists($args{tags})) {
-		print {$$self{tmp_db_fh}} "##".TAGS."=".join(',', sort @{$args{tags}})."\n";
-	} else {
-		if ( $$self{transactions}->{vcf}->{tags} ) {
-			my @array = split(/,/, $$self{transactions}->{vcf}->{tags});
-			foreach my $input_tag (@array) {
-				my $found = 0;
-				foreach my $db_tag (@{$$self{header}->{tags}}) {
-					if ($input_tag eq $db_tag) {
-						$found = 1;
-						last;
-					}
-				}
-				if ( !$found) {
-					push (@{$$self{header}->{tags}}, $input_tag);
-				}
-			}
-		}
-		print {$$self{tmp_db_fh}} "##".TAGS."=".join(',', sort @{$$self{header}->{tags}})."\n";
-	}
+    if (exists($args{entries})) {
+        print {$$self{tmp_db_fh}} "##".ENTRIES."=".join(',', sort @{$args{entries}})."\n";
+    } else {
+        push (@{$$self{header}->{entries}}, basename($$self{transactions}->{vcf}->{file}));
+        print {$$self{tmp_db_fh}} "##".ENTRIES."=".join(',', sort @{$$self{header}->{entries}})."\n";
+    }
 
-	if (exists($args{db_id})) {
-	    print {$$self{tmp_db_fh}} "##".DB_ID."=".$args{db_id}."\n";
-	} else {
-            #If no database id
-            if ( ! $$self{header}->{db_id} ) {
-                my $mac = `/sbin/ifconfig eth0 | grep HWaddr | awk '{ print \$NF}' | sed 's/://g'`;
-                $mac =~ s/\s+$//;
-	        print {$$self{tmp_db_fh}} "##".DB_ID."=".$mac.time()."\n";
-            } else {
-	        print {$$self{tmp_db_fh}} "##".DB_ID."=".$$self{header}->{db_id}."\n";
+    if (exists($args{tags})) {
+        print {$$self{tmp_db_fh}} "##".TAGS."=".join(',', sort @{$args{tags}})."\n";
+    } else {
+        if ( $$self{transactions}->{vcf}->{tags} ) {
+            my @array = split(/,/, $$self{transactions}->{vcf}->{tags});
+            foreach my $input_tag (@array) {
+                my $found = 0;
+                foreach my $db_tag (@{$$self{header}->{tags}}) {
+                    if ($input_tag eq $db_tag) {
+                        $found = 1;
+                        last;
+                    }
+                }
+                if ( !$found) {
+                    push (@{$$self{header}->{tags}}, $input_tag);
+                }
             }
-	}
+        }
+        print {$$self{tmp_db_fh}} "##".TAGS."=".join(',', sort @{$$self{header}->{tags}})."\n";
+    }
+
+    if (exists($args{db_id})) {
+        print {$$self{tmp_db_fh}} "##".DB_ID."=".$args{db_id}."\n";
+    } else {
+        #If no database id
+        if ( ! $$self{header}->{db_id} ) {
+            my $mac = `/sbin/ifconfig eth0 | grep HWaddr | awk '{ print \$NF}' | sed 's/://g'`;
+            $mac =~ s/\s+$//;
+            print {$$self{tmp_db_fh}} "##".DB_ID."=".$mac.time()."\n";
+        } else {
+            print {$$self{tmp_db_fh}} "##".DB_ID."=".$$self{header}->{db_id}."\n";
+        }
+    }
 }
 
 =head2 load_header

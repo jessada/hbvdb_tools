@@ -25,30 +25,50 @@ sub error
     my (@msg) = @_;
     if ( scalar @msg ) { croak join('',@msg); }
     die
+        #"@msg\n",
         "About: Add variant frequencies to Background Variation Database, one vcf file at a time.\n",
-        "Usage: bvd-add.pl [OPTIONS] file.vcf\n",
-        "Options:\n",
-        "   -h, -?, --help                  This help message.\n",
-        "   -d, --database <db_path>        Specific target database. Default is DB\n",
-        "   -T, --tags <string>             Additional information to categorize variant from this vcf file, comma separated.\n",
-        "   -s, --savediskspace             Save disk space, i.e. no backup\n",
+        "Usage:",
+        "   bvd-add.pl [arguments] <vcf-file>\n",
+        "\n",
+        "   Optional arguments:\n",
+        "      -h, -?, --help                  This help message.\n",
+        "\n",
+        "      Arguments to control database content\n",
+        "         --buildver <string>             genome build version (default: hg19)\n",
+        "         -d, --database <db_path>        Specific target database. Default is DB\n",
+        "         -T, --tags <string>             Additional information to categorize variant from this vcf file, comma separated.\n",
+        "\n",
+        "      Arguments to control disk usage\n",
+        "         -s, --savediskspace             Save disk space, i.e. no backup\n",
+        "\n",
         "Note: The input vcf file is in plain text format, not in compressed format (e.g. gzip), even though Vcf.pm was used here.\n",
         "\n";
+
 }
 
 sub parse_params
 {
     my $opts = { args=>[$0, @ARGV] };
+
     while (my $arg=shift(@ARGV))
     {
-        if ( $arg eq '-s' || $arg eq '--savediskspace' ) { $$opts{save_diskspace}=1; next; }
-        if ( $arg eq '-T' || $arg eq '--tags' ) { $$opts{tags}=shift(@ARGV); next; }
+        if ( $arg eq '--buildver' ) { $$opts{buildver}=shift(@ARGV); next; }
         if ( $arg eq '-d' || $arg eq '--database' ) { $$opts{database}=shift(@ARGV); next; }
+        if ( $arg eq '-T' || $arg eq '--tags' ) { $$opts{tags}=shift(@ARGV); next; }
+        if ( $arg eq '-s' || $arg eq '--savediskspace' ) { $$opts{save_diskspace}=1; next; }
         if ( $arg eq '-?' || $arg eq '-h' || $arg eq '--help' ) { error(); }
         if ( -e $arg ) { $$opts{file}=$arg; next; }
-        error("Unknown parameter or non-existent file \"$arg\". Run -? for help.\n");
+        error("ERROR : unknown parameter or non-existent file \"$arg\". Run -? for help.\n");
     }
-    if ( !exists($$opts{file}) ) { error() }    return $opts;
+    if ( !exists($$opts{file}) ) { 
+        error("ERROR : invalid file name \"$$opts{file}\". Run -? for help.\n");
+    }
+    $$opts{buildver} =  Bvdb::get_default_buildver() unless defined($$opts{buildver});
+    if ( ! Bvdb::valid_buildver($$opts{buildver})) {
+        error("ERROR : invalid buildver \"$$opts{buildver}\". Run -? for help.\n");
+    }
+
+    return $opts;
 }
 
 sub add_vcf_to_bvd
