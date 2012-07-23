@@ -149,6 +149,12 @@ sub new
     my $self = {@args};
     bless $self, ref($class) || $class;
    
+    #get build version
+    $$self{buildver}       =  DEFAULT_BUILD_VER unless defined($$self{buildver});
+    if ( ! valid_buildver($$self{buildver})) {
+        $self->throw("invalid buildver '$$self{buildver}'");
+    }
+
     #define location of the database.
     $$self{db_dir}            = dirname(abs_path($0))."/".DEFAULT_DB_DIR unless defined($$self{db_dir});
 
@@ -227,7 +233,7 @@ sub begin_add_tran
     if ( $$self{transactions}->{active} ) { $self->throw("Currently, there are other active transactions."); }
     
     #Prepare for incoming transactions
-    $self->load_header();
+    #$self->load_header();
 
     $$self{transactions}->{active}               = 1;
     $$self{transactions}->{vcf}->{file}          = $args{file};
@@ -307,7 +313,7 @@ sub _init_tmp_db
 
 =head2 load_header
 
-    About   : Load header information.
+    About   : Load header and set header defautl value.
     Usage   : my $bvdb = Bvdb->new(); 
               $bvdb->load_header(); #The result is stored in in $$self{header}
     Args    : None.
@@ -426,7 +432,6 @@ sub add_variant
     my @tags_array;
     my $tags;
     
-    no warnings 'uninitialized';
     if ( !$$self{transactions}->{active} ) {$self->throw("'begin_tran' haven't been called.");}
     
     #create key from args
@@ -448,44 +453,46 @@ sub add_variant
         $$self{current_variant} = $self->_next_record();
     }
     
-    #if both key are equal
-    if ( $$self{current_variant}->{db_variant_key} eq $args_variant_key) {
-        my $result_tags;
-        my $total = $$self{current_variant}->{total} + $args{allele_count};
-        if (! $$self{transactions}->{vcf}->{tags}) {
-                        $result_tags = $$self{current_variant}->{tags}; 
-        } else {
-            if ($$self{current_variant}->{tags} eq ".") {
-                $result_tags = "$$self{transactions}->{vcf}->{tags}=$args{allele_count}";
+    if (defined $$self{current_variant}->{db_variant_key} ) {
+        #if both key are equal
+        if ( $$self{current_variant}->{db_variant_key} eq $args_variant_key) {
+            my $result_tags;
+            my $total = $$self{current_variant}->{total} + $args{allele_count};
+            if (! $$self{transactions}->{vcf}->{tags}) {
+                            $result_tags = $$self{current_variant}->{tags}; 
             } else {
-                my @array = split(/:/, $$self{current_variant}->{tags});
-                my %hash;
-                        
-                for (my $i=0; $i<=$#array; $i++) {
-                    my ($tags, $count) = split(/=/, $array[$i]);
-                    if ($tags eq $$self{transactions}->{vcf}->{tags}){
-                        $hash{$tags} = $count+$args{allele_count};
-                    } else {
-                        $hash{$tags} = $count;
-                    } 
-                    push (@tags_array, "$tags=$hash{$tags}");
+                if ($$self{current_variant}->{tags} eq ".") {
+                    $result_tags = "$$self{transactions}->{vcf}->{tags}=$args{allele_count}";
+                } else {
+                    my @array = split(/:/, $$self{current_variant}->{tags});
+                    my %hash;
+                            
+                    for (my $i=0; $i<=$#array; $i++) {
+                        my ($tags, $count) = split(/=/, $array[$i]);
+                        if ($tags eq $$self{transactions}->{vcf}->{tags}){
+                            $hash{$tags} = $count+$args{allele_count};
+                        } else {
+                            $hash{$tags} = $count;
+                        } 
+                        push (@tags_array, "$tags=$hash{$tags}");
+                    }
+                    if ((!$hash{$$self{transactions}->{vcf}->{tags}}) && ($$self{transactions}->{vcf}->{tags})) {
+                        push (@tags_array, "$$self{transactions}->{vcf}->{tags}=$args{allele_count}");
+                    }
+                    $result_tags = join(':', sort @tags_array);
                 }
-                if ((!$hash{$$self{transactions}->{vcf}->{tags}}) && ($$self{transactions}->{vcf}->{tags})) {
-                    push (@tags_array, "$$self{transactions}->{vcf}->{tags}=$args{allele_count}");
-                }
-                $result_tags = join(':', sort @tags_array);
             }
+            
+            #Count new REF if any 
+            $self->_count_new_REF(\%args, $args_reference_key, $args_position_key);
+
+            #Write the variant record to the temporary database
+            print {$$self{tmp_db_fh}} "$args{CHROM}\t$args{POS}\t$args{REF}\t$args{ALT}\t$total\t$result_tags\n";
+            $$self{current_variant} = $self->_next_record();
+            return 1;
         }
-        
-        #Count new REF if any 
-        $self->_count_new_REF(\%args, $args_reference_key, $args_position_key);
 
-        #Write the variant record to the temporary database
-        print {$$self{tmp_db_fh}} "$args{CHROM}\t$args{POS}\t$args{REF}\t$args{ALT}\t$total\t$result_tags\n";
-        $$self{current_variant} = $self->_next_record();
-        return 1;
     }
-
     #Count new REF if any 
     $self->_count_new_REF(\%args, $args_reference_key, $args_position_key);
 
@@ -541,8 +548,7 @@ sub _next_record
 
     #if blank line found
     {
-        no warnings 'uninitialized';
-        if ( $array[1] eq "") {
+        if ( ! defined $array[1]) {
             return $self->_next_record();
         }
     }
