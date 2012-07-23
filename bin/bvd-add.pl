@@ -84,7 +84,7 @@ sub add_vcf_to_bvd
     my $n_var_samples = $#{$$vcf{columns}}-(FIX_COL)+1;
 
     #Init bvdb connection
-    my $bvdb = Bvdb->new(db_dir=>$$opts{database}, save_diskspace=>$$opts{save_diskspace});
+    my $bvdb = Bvdb->new(db_dir=>$$opts{database}, save_diskspace=>$$opts{save_diskspace}, buildver=>$$opts{buildver});
     $bvdb->begin_add_tran(file=>$$opts{file}, total_samples=>$n_var_samples, tags=>$$opts{tags});
 
     my %fq = (

@@ -1,11 +1,12 @@
 #!/bin/bash
 
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+db_files=($scriptdir/*)
 
-if [ -e $scriptdir/../../../bin/DB/bvdb ]
+if [ ${#db_files[@]} -gt 0 ]
 then
-	rm $scriptdir/../../../bin/DB/*
-	rmdir $scriptdir/../../../bin/DB/
+    rm $scriptdir/../../../bin/DB/*
+    rmdir $scriptdir/../../../bin/DB/
 fi
 
 mkdir $scriptdir/../../../bin/DB/
