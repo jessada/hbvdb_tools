@@ -75,23 +75,23 @@ sub add_vcf_to_bvd
     #Open vcf file
     my $vcf = Vcf->new(file=>$$opts{file},region=>'1:1000-2000');
     $vcf->parse_header();
-    my $reference = @{$vcf->get_header_line(key=>'test')}[0];
-    if ( defined $reference) {
-        print ${@{$reference}[0]}{value},"\n";
-    }
-    my $contig_table = @{$vcf->get_header_line(key=>'contig')}[0];
-    if ( defined $contig_table) {
-        foreach my $key ( keys %$contig_table) {
-            print $contig_table->{$key}->{length},"\n";
-        }
-    }
-    #print $a[1],"\n";
 
     my $n_var_samples = $#{$$vcf{columns}}-(FIX_COL)+1;
 
     #Init bvdb connection
     my $bvdb = Bvdb->new(db_dir=>$$opts{database}, save_diskspace=>$$opts{save_diskspace}, buildver=>$$opts{buildver});
     $bvdb->load_header();
+    my $reference = $vcf->get_header_line(key=>'reference')->[0];
+    if ( defined $reference) {
+        $bvdb->set_reference($reference->[0]->{value});
+    }
+    my $contig_table = $vcf->get_header_line(key=>'contig')->[0];
+    if ( defined $contig_table) {
+        foreach my $key ( keys %$contig_table) {
+            $bvdb->set_contig_table(ID=>$contig_table->{$key}->{ID},length=>$contig_table->{$key}->{length});
+        }
+    }
+    #print $a[1],"\n";
     $bvdb->begin_add_tran(file=>$$opts{file}, total_samples=>$n_var_samples, tags=>$$opts{tags});
 
     my %fq = (

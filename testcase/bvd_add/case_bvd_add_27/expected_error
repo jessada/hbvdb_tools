@@ -1,4 +1,1 @@
-ERROR : invalid buildver "hg17". Run -? for help.
- at /home/jessada/development/thesis/hbvdb/testcase/bvd_add/case_bvd_add_27/../../../bin/bvd-add.pl line 26
-	main::error('ERROR : invalid buildver "hg17". Run -? for help.\x{a}') called at /home/jessada/development/thesis/hbvdb/testcase/bvd_add/case_bvd_add_27/../../../bin/bvd-add.pl line 67
-	main::parse_params() called at /home/jessada/development/thesis/hbvdb/testcase/bvd_add/case_bvd_add_27/../../../bin/bvd-add.pl line 16
+ERROR: invalid build version "hg17". Currently, hbvdb-tools only support version hg18,hg19

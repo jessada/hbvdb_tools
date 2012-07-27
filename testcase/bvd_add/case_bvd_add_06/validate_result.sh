@@ -23,4 +23,4 @@ then
 	rmdir $scriptdir/case_bvd_add_06_DB/
 fi
 
-
+rm $scriptdir/expected_result

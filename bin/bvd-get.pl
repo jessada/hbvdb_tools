@@ -102,18 +102,21 @@ sub output_vcf
 {
     #Connect to DB
     my $bvdb = Bvdb->new(db_dir=>$$opts{database});
+    $bvdb->load_header();
 
     #Create VCF output
     my $vcf_out = Vcf->new();
 
-    #Output VCF header
-    $bvdb->load_header();
-
     my @cols;
     $vcf_out->add_columns(@cols);
 
-    #$vcf_out->add_header_line({key=>'INFO',ID=>'AC',Number=>-1,Type=>'Integer',Description=>'Allele count in genotypes'});
-    #$vcf_out->add_header_line({key=>'INFO',ID=>'AN',Number=>1,Type=>'Integer',Description=>'Total number of alleles in called genotypes'});
+    foreach my $key (sort keys $$bvdb{header}->{contig}) {
+        $vcf_out->add_header_line({key=>'contig',ID=>$key,length=>$$bvdb{header}->{contig}->{$key}});
+    }
+    
+    if ($$bvdb{header}->{reference}) {
+        $vcf_out->add_header_line({key=>'reference',value=>$$bvdb{header}->{reference}});
+    } 
     print $vcf_out->format_header();
 
     while (my $variant = $bvdb->next_data_hash($$opts{tags})) {
@@ -138,7 +141,7 @@ sub output_vcf
             # print "$variant->{CHROM} $variant->{POS} $len $variant->{REF} $variant->{ALT} $variant->{fq}\n";
         }
     }
-    $bvdb-close();
+    $bvdb->close();
 }
 
 sub validate_tags

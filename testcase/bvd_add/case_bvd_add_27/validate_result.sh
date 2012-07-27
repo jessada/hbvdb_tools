@@ -8,7 +8,7 @@ then
 	rmdir $scriptdir/../../../bin/DB/
 fi
 
-$scriptdir/../../../bin/bvd-add.pl $scriptdir/case_bvd_add_27_1.vcf --buildver hg17 2> $scriptdir/tmp.txt 
+$scriptdir/../../../bin/bvd-add.pl $scriptdir/case_bvd_add_27_1.vcf --buildver hg17 2>&1 | grep "ERROR" > $scriptdir/tmp.txt 
 
 result=$(diff $scriptdir/tmp.txt $scriptdir/expected_error)
 

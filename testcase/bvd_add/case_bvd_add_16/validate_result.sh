@@ -27,4 +27,4 @@ else
     echo "$result"
 fi
 
-
+rm $scriptdir/expected_result
