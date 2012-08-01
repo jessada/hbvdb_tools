@@ -2,7 +2,7 @@
 
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-if [ -z $scriptdir/../../../bin/DB  ]; then
+if [ ! -e $scriptdir/../../../bin/DB  ]; then
     mkdir $scriptdir/../../../bin/DB
 fi
 

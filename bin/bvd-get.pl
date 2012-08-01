@@ -60,10 +60,10 @@ sub parse_params
         error("Unknown parameter or non-existent file \"$arg\". Run -? for help.\n");
     }
     $$opts{output_format} = AVDB_FORMAT unless exists($$opts{output_format});
-    $$opts{buildver}      =  Bvdb::get_default_buildver() unless defined($$opts{buildver});
-    if ( ! Bvdb::valid_buildver($$opts{buildver})) {
-        error("ERROR : invalid buildver \"$$opts{buildver}\". Run -? for help.\n");
-    }
+    #$$opts{buildver}      =  Bvdb::get_default_buildver() unless defined($$opts{buildver});
+    #if ( ! Bvdb::valid_buildver($$opts{buildver})) {
+    #    error("ERROR : invalid buildver \"$$opts{buildver}\". Run -? for help.\n");
+    #}
     return $opts;
 }
 
@@ -101,7 +101,7 @@ sub output_avdb
 sub output_vcf
 {
     #Connect to DB
-    my $bvdb = Bvdb->new(db_dir=>$$opts{database});
+    my $bvdb = Bvdb->new(db_dir=>$$opts{database}, buildver=>$$opts{buildver});
     $bvdb->load_header();
 
     #Create VCF output

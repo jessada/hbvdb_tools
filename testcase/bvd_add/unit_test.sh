@@ -28,5 +28,23 @@ $scriptdir/case_bvd_add_23/validate_result.sh
 $scriptdir/case_bvd_add_24/validate_result.sh
 $scriptdir/case_bvd_add_25/validate_result.sh
 $scriptdir/case_bvd_add_26/validate_result.sh
+$scriptdir/case_bvd_add_27/validate_result.sh
+$scriptdir/case_bvd_add_28/validate_result.sh
+$scriptdir/case_bvd_add_29/validate_result.sh
+$scriptdir/case_bvd_add_30/validate_result.sh
+$scriptdir/case_bvd_add_31/validate_result.sh
+$scriptdir/case_bvd_add_32/validate_result.sh
+$scriptdir/case_bvd_add_33/validate_result.sh
+$scriptdir/case_bvd_add_34/validate_result.sh
+$scriptdir/case_bvd_add_35/validate_result.sh
+$scriptdir/case_bvd_add_36/validate_result.sh
+$scriptdir/case_bvd_add_37/validate_result.sh
+$scriptdir/case_bvd_add_38/validate_result.sh
+$scriptdir/case_bvd_add_39/validate_result.sh
+$scriptdir/case_bvd_add_40/validate_result.sh
+$scriptdir/case_bvd_add_41/validate_result.sh
+$scriptdir/case_bvd_add_42/validate_result.sh
+$scriptdir/case_bvd_add_43/validate_result.sh
+$scriptdir/case_bvd_add_44/validate_result.sh
 
 
