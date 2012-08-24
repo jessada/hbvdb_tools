@@ -1,0 +1,329 @@
+% $Header: /Users/joseph/Documents/LaTeX/beamer/solutions/conference-talks/conference-ornate-20min.en.tex,v 90e850259b8b 2007/01/28 20:48:30 tantau $
+
+\documentclass{beamer}
+
+% This file is a solution template for:
+
+% - Talk at a conference/colloquium.
+% - Talk length is about 20min.
+% - Style is ornate.
+
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+\usepackage{graphics}
+\usepackage{pgf,pgfarrows,pgfnodes}
+\usepackage{pgfkeys}
+\usepackage{tikz}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{comment}
+%\usepackage{scalefnt}
+%\usepackage{fontspec}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{shapes.misc}
+\usetikzlibrary{shapes.symbols}
+\usetikzlibrary{shapes.arrows}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
+
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+
+\title[Master thesis presentation] % (optional, use only with long paper titles)
+{Disease gene candidate discovery by genome sequencing:}
+
+\subtitle
+{improved variant filtering techniques.}
+
+\author[Jessada Thutkawkorapin] % (optional, use only with lots of authors)
+{Jessada Thutkawkorapin}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[Department of Computational Biology] % (optional, but mostly needed)
+{Department of Computational Biology, KTH}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[Master thesis presentation] % (optional, should be abbreviation of conference name)
+{June, 2012}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Theoretical Computer Science}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+%\pgfdeclareimage[height=0.7cm]{university-logo}{kth_svv_comp_science_comm}
+%\logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+
+%\AtBeginSubsection[]
+%{
+%  \begin{frame}<beamer>{Outline}
+%    \tableofcontents[currentsection,currentsubsection]
+%  \end{frame}
+%}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+%\begin{frame}
+%  \titlepage
+%\end{frame}
+
+%\begin{frame}{Outline}
+%  \tableofcontents
+%  % You might wish to add the option [pausesections]
+%\end{frame}
+
+
+% Structuring a talk is a difficult task and the following structure
+% may not be suitable. Here are some rules that apply for this
+% solution: 
+
+% - Exactly two or three sections (other than the summary).
+% - At *most* three subsections per section.
+% - Talk about 30s to 2min per frame. So there should be between about
+%   15 and 30 frames, all told.
+
+% - A conference audience is likely to know very little of what you
+%   are going to talk about. So *simplify*!
+% - In a 20min talk, getting the main ideas across is hard
+%   enough. Leave out details, even if it means being less precise than
+%   you think necessary.
+% - If you omit details that are vital to the proof/implementation,
+%   just say so once. Everybody will be happy with that.
+
+
+\tikzset{guide lines/.style={red!10, very thin}}
+
+
+
+%\section{Results \& Discussion}
+
+%\subsection{Human Background Variation Frequency Database}
+%\begin{frame}[fragile]
+%    \frametitle{Standalone system}
+%    \begin{center}
+%        %\scalefont{0.01}
+%        \begin{tikzpicture}[
+%                explanation text/.style={red, text width=9cm, text ragged},
+%                sequencing center/.style={chamfered rectangle, red, double=black, draw, chamfered rectangle xsep=0.2cm, chamfered rectangle ysep=0.2cm, minimum width=4cm, minimum height=2.2cm},
+%                center name text/.style={font=\scriptsize},
+%                single database/.style={shape aspect=0.08,cylinder,blue!50!black!50,shape border rotate=90,draw,font=\tiny,bottom color=red!50!black!20,top color=white, minimum height=1.2cm, minimum width=2cm},
+%                IO/.style={tape, draw, double=black},
+%            ]
+%
+%            \draw[step=1, guide lines] (-5.3,-3.3) grid (5.3,3.3);
+%
+%            \draw<1-2> (-0.2, 3.0) node [explanation text] {Explanation 1 will be here later.};
+%            \draw<1-2> (-0.2, 2.5) node [explanation text] {Explanation 2 will be here later as well.};
+%            \draw<1-2> (-0.2, 2.0) node [explanation text] {And the same for Explanation 3.};
+%
+%
+%            
+%            \pgftransformshift{\pgfpoint{0cm}{-1cm}}
+%            \draw<1-2> (0,0) node [sequencing center]{} ;
+%            \draw<1-2> (0,0.9) node [center name text] {\bf Sequencing center};
+%            \draw<1-2> (0,-0.1) node [single database] (single_DB) {database};
+%
+%            \draw<1-2> (-3.5,0) node [IO] (input_A) {Input};
+%            \draw<1-2> (3.5,0) node [IO] (output_A) {Output};
+%
+%            
+%            
+%
+%
+%        \end{tikzpicture}
+%    \end{center}
+%\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Multicenter}
+    \begin{center}
+        %\scalefont{0.01}
+        \begin{tikzpicture}[
+                explanation box/.style={shape=rectangle, draw, red, minimum width=10.5cm, minimum height=1.7cm, font=\scriptsize},
+                explanation text/.style={red, font=\scriptsize},
+                sequencing center/.style={chamfered rectangle, red, double=black, draw, chamfered rectangle xsep=0.2cm, chamfered rectangle ysep=0.2cm, minimum width=4cm, minimum height=2.2cm},
+                center name text/.style={font=\scriptsize},
+                single database/.style={shape aspect=0.08,cylinder,blue!50!black!50,shape border rotate=90,draw,bottom color=red!50!black!20,top color=white, minimum height=1.2cm, minimum width=2cm},
+                master database/.style={shape aspect=0.08,cylinder,blue!50!black!50,shape border rotate=90,draw,font=\tiny,bottom color=red!50!black!20,top color=white},
+                slave database/.style={shape aspect=0.08,cylinder,blue!50!black!50,shape border rotate=90,draw,font=\tiny,bottom color=blue!20!black!20,top color=white},
+                master updated/.style={starburst, draw, double=black, minimum width=3.5cm, minimum height=1.9cm},
+                slave updated/.style={starburst, draw, double=black, minimum width=2.7cm, minimum height=1.7cm},
+                exchange arrow/.style={double arrow, draw, black, double=red!20, fill=blue!80!red!20, double arrow head indent=1ex, font=\tiny},
+                IO/.style={tape, draw, double=black},
+            ]
+
+            \draw[step=1, guide lines] (-5.3,-3.3) grid (5.3,3.3);
+
+            \draw<1> (0, 2.4) node [explanation box] (explanation_box){};
+
+            %\draw node [below right=0.1cm of explanation_box.north west, explanation text] (text_1) {Let's start by every centers only have variant frequencies gathered by themself.};
+            \draw node [below right=0.1cm of explanation_box.north west, explanation text] (text_1) {\begin{itemize}\item Let's start by every centers only have variant frequencies gathered by themself.\end{itemize}};
+
+%            \draw<1> (-0.2, 2.5) node [explanation section] {\begin{itemize}\item Let's start by every centers only have variant frequencies gathered by themself.\end{itemize}};
+%            \draw<2> (-0.2, 2.5) node [explanation section] {\begin{itemize}\item Once the centers exchange their data, they will only make a copy of databases from other center and keep each of them in the separate databases.\end{itemize}};
+            
+%            \draw<3-5> (-0.2, 3.0) node [explanation text] {Explanation 1 will be here later.};
+%            \draw<3-5> (-0.2, 2.5) node [explanation text] {Explanation 2 will be here later as well.};
+%            \draw<3-5> (-0.2, 2.0) node [explanation text] {And the same for Explanation 3.};
+
+
+            
+            \pgftransformshift{\pgfpoint{-2.7cm}{0.6cm}}
+            \draw<1-4> (0,0) node [sequencing center]{} ;
+            \draw<1-4> (0,0.9) node [center name text] {\bf Sequencing center A};
+            \draw<1> (0,-0.1) node [single database] (single_DB_A) {database A};
+            \draw<2-5> (0,0.2) node [master database] (DB_A_A) {database A(master)};
+            \draw<2-5> (-0.9,-0.5) node [slave database] (DB_A_B) {database B};
+            \draw<2-5> (0.9,-0.5) node [slave database] (DB_A_C) {database C};
+            \draw<3-5> (0,0.25) node [master updated, green] {};
+            \draw<3-5> (-0.9,-0.45) node [slave updated, yellow] {};
+            \draw<3-5> (0.9,-0.45) node [slave updated, yellow] {};
+
+            %\draw<1-2> (4,0) node [IO] (input_A) {input};
+
+            
+            
+            \pgftransformshift{\pgfpoint{5.4cm}{0cm}}
+            \draw<1-4> (0,0) node [sequencing center] {};
+            \draw<1-4> (0,0.9) node [center name text] {\bf Sequencing center B};
+            \draw<1> (0,-0.1) node [single database] (single_DB_B) {database B};
+            \draw<2-5> (0,0.2) node [master database] (DB_B_B) {database B(master)};
+            \draw<2-5> (-0.9,-0.5) node [slave database] (DB_B_A) {database A};
+            \draw<2-5> (0.9,-0.5) node [slave database] (DB_B_C) {database C};
+            \draw<3-5> (0,0.25) node [master updated, green] {};
+            \draw<3-5> (-0.9,-0.45) node [slave updated, yellow] {};
+            \draw<3-5> (0.9,-0.45) node [slave updated, yellow] {};
+
+            
+            
+            \pgftransformshift{\pgfpoint{-2.7cm}{-2.6cm}}
+            \draw<1-4> (0,0) node [sequencing center] {};
+            \draw<1-4> (0,0.9) node [center name text] {\bf Sequencing center C};
+            \draw<1> (0,-0.1) node [single database] (single_DB_C) {database C};
+            \draw<2-5> (0,0.2) node [master database] (DB_C_C) {database C(master)};
+            \draw<2-5> (-0.9,-0.5) node [slave database] (DB_C_A) {database A};
+            \draw<2-5> (0.9,-0.5) node [slave database] (DB_C_B) {database B};
+            \draw<3-5> (0,0.25) node [master updated, green] {};
+            \draw<3-5> (-0.9,-0.45) node [slave updated, yellow] {};
+            \draw<3-5> (0.9,-0.45) node [slave updated, yellow] {};
+
+            %\node[cloud, draw, fill=gray!20, aspect=2] {ABC};
+            \pgftransformshift{\pgfpoint{0cm}{2.0cm}}
+            \draw<2> (-2.0,-1.1) node [exchange arrow, rotate=-50] {bvd-merge};
+            \draw<2> (2.0,-1.1) node [exchange arrow, rotate=50] {bvd-merge};
+            \draw<2> (0.0,0.6) node [exchange arrow] {bvd-merge};
+
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+%\begin{frame}
+%    \frametitle{Filtering performance}
+%    \begin{itemize}
+%        \item<1-> Purpose
+%            \begin{itemize}
+%                \item<1-> To see how much variants are dropped after filtering against this database
+%            \end{itemize}
+%        \item<2-> Test data
+%            \begin{itemize}
+%                \item<2-> 200danes \emph{\{Li et al. 2010\}}
+%                \item<2-> 1000 Genomes
+%            \end{itemize}
+%    \end{itemize}
+%\end{frame}
+%
+%\begin{frame}
+%    \frametitle{Filtering performance}
+%    \begin{center}
+%        \begin{tikzpicture}[
+%                terminal/.style={rectangle,rounded corners=2mm,very thick,draw=red!50!black!50,top color=white,bottom color=red!50!black!20,font=\scriptsize},
+%                transition text/.style={font=\scriptsize},
+%                database/.style={shape aspect=0.25,cylinder,blue!50!black!50,shape border rotate=90,draw,font=\scriptsize,bottom color=blue!20!black!20,top color=white}
+%            ]
+%
+%            \draw[step=1, guide lines] (-5.3,-3.1) grid (5.3,3.1);
+%
+%        \draw (-0.2, 2.7) node(ref) [red, text width=10cm, text ragged] {\begin{itemize}\item Evaluation method\end{itemize}};
+%
+%            \draw<1-> (-2,0) node [database] (200danes) {200danes};
+%            \draw<1-> (1,2) node [terminal] (test_variants) {Test variants};
+%            \draw<1-> (1,0) node [database] (1000genomes) {1000 Genomes};
+%            \draw<1-> (1,-2) node [database] (hbvdb) {HBVDB};
+%
+%          %\draw<2> [->,red,thick] (-3.5,-0.5) --  (200danes);
+%          %\draw<2> [->,red,thick] (3,0) --  (1000genomes);
+%
+%            \draw<3-5> [->, thick] (200danes) to [bend left=45] node[auto,swap,transition text] {10\%}  (test_variants);
+%            \draw<3-5> [->, thick] (200danes) to [bend right=45] node[auto,swap,transition text] {bvd-add} node[auto,transition text] {90\%}  (hbvdb);
+%            \draw<3-5> [->, thick] (test_variants) -- node[right,transition text] {192,864 variants}  (1000genomes);
+%            \draw<4-> [->, thick] (1000genomes) -- node[right,transition text] {53,872 variants left}  (hbvdb);
+%            \draw<5-> [->, thick] (hbvdb) -- node[right,transition text] {48,757 variants left}  (1,-3);
+%            \draw<6-> [red, thick] (1.55,-0.9) ellipse (0.5 and 0.25);
+%            \draw<6-> [red, thick] (1.55,-2.64) ellipse (0.5 and 0.25);
+%            \draw<7-> [->,red, thick] (200danes) -- node[auto,transition text] {subset}  (1000genomes);
+%        \end{tikzpicture}
+%    \end{center}
+%\end{frame}
+
+    
+    
+\end{document}
+
+
