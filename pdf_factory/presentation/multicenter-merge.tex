@@ -8,21 +8,6 @@
 % - Talk length is about 20min.
 % - Style is ornate.
 
-
-
-% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
-%
-% In principle, this file can be redistributed and/or modified under
-% the terms of the GNU Public License, version 2.
-%
-% However, this file is supposed to be a template to be modified
-% for your own needs. For this reason, if you use this file as a
-% template and not specifically distribute it as part of a another
-% package/program, I grant the extra permission to freely copy and
-% modify this file as you see fit and even to delete this copyright
-% notice. 
-
-
 \mode<presentation>
 {
   \usetheme{Warsaw}
@@ -38,8 +23,7 @@
 \usepackage{tikz}
 \usepackage[absolute,overlay]{textpos}
 \usepackage{comment}
-%\usepackage{scalefnt}
-%\usepackage{fontspec}
+\usepackage{hyphenat}
 \usetikzlibrary{backgrounds}
 \usetikzlibrary{positioning}
 \usetikzlibrary{shapes.geometric}
@@ -61,11 +45,11 @@
 % does not look nice, try deleting the line with the fontenc.
 
 
-\title[Master thesis presentation] % (optional, use only with long paper titles)
-{Disease gene candidate discovery by genome sequencing:}
+\title[bvd-merge design \& architecture] % (optional, use only with long paper titles)
+{HBVDB-tools}
 
 \subtitle
-{improved variant filtering techniques.}
+{bvd-merge concept}
 
 \author[Jessada Thutkawkorapin] % (optional, use only with lots of authors)
 {Jessada Thutkawkorapin}
@@ -73,13 +57,13 @@
 % - Use the \inst{?} command only if the authors have different
 %   affiliation.
 
-\institute[Department of Computational Biology] % (optional, but mostly needed)
-{Department of Computational Biology, KTH}
+\institute[Science for Life Laboratory] % (optional, but mostly needed)
+{Science for Life Laboratory, Stockholm}
 % - Use the \inst command only if there are several affiliations.
 % - Keep it simple, no one is interested in your street address.
 
 \date[Master thesis presentation] % (optional, should be abbreviation of conference name)
-{June, 2012}
+{August, 2012}
 % - Either use conference name or its abbreviation.
 % - Not really informative to the audience, more for people (including
 %   yourself) who are reading the slides online
@@ -104,12 +88,12 @@
 % Delete this, if you do not want the table of contents to pop up at
 % the beginning of each subsection:
 
-%\AtBeginSubsection[]
-%{
-%  \begin{frame}<beamer>{Outline}
-%    \tableofcontents[currentsection,currentsubsection]
-%  \end{frame}
-%}
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
 
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
@@ -120,207 +104,353 @@
 
 \begin{document}
 
-%\begin{frame}
-%  \titlepage
-%\end{frame}
+\begin{frame}
+  \titlepage
+\end{frame}
 
-%\begin{frame}{Outline}
-%  \tableofcontents
-%  % You might wish to add the option [pausesections]
-%\end{frame}
+\begin{frame}{Outline}
+  \tableofcontents
+  % You might wish to add the option [pausesections]
+\end{frame}
 
-
-% Structuring a talk is a difficult task and the following structure
-% may not be suitable. Here are some rules that apply for this
-% solution: 
-
-% - Exactly two or three sections (other than the summary).
-% - At *most* three subsections per section.
-% - Talk about 30s to 2min per frame. So there should be between about
-%   15 and 30 frames, all told.
-
-% - A conference audience is likely to know very little of what you
-%   are going to talk about. So *simplify*!
-% - In a 20min talk, getting the main ideas across is hard
-%   enough. Leave out details, even if it means being less precise than
-%   you think necessary.
-% - If you omit details that are vital to the proof/implementation,
-%   just say so once. Everybody will be happy with that.
 
 
 \tikzset{guide lines/.style={red!10, very thin}}
 
+\tikzset{explanation box/.style={shape=rectangle, draw, red!10, minimum width=10.5cm, minimum height=1.7cm, font=\scriptsize}}
+\tikzset{explanation text/.style={red, font=\small, text width=10cm}}
+\tikzset{sequencing center/.style={chamfered rectangle, red!50!black!70, double=black, draw, chamfered rectangle xsep=0.2cm, chamfered rectangle ysep=0.2cm, minimum width=4cm, minimum height=2.2cm}}
+\tikzset{center name text/.style={font=\scriptsize}}
+\tikzset{single database/.style={shape aspect=0.08,cylinder,blue!50!black!50,shape border rotate=90,draw,bottom color=red!50!black!20,top color=white, minimum height=1.2cm, minimum width=2cm}}
+\tikzset{master database/.style={shape aspect=0.08,cylinder,blue!50!black!50,shape border rotate=90,draw,font=\tiny,bottom color=red!50!black!20,top color=white, minimum width=2.4cm}}
+\tikzset{slave database/.style={shape aspect=0.08,cylinder,blue!50!black!50,shape border rotate=90,draw,font=\tiny,bottom color=blue!20!black!20,top color=white, minimum width=1.4cm}}
+\tikzset{master updated/.style={starburst, draw, double=black, minimum width=3.5cm, minimum height=1.9cm}}
+\tikzset{slave updated/.style={starburst, draw, double=black, minimum width=2.7cm, minimum height=1.7cm}}
+\tikzset{exchange arrow/.style={double arrow, draw, black, double=red!20, fill=blue!80!red!20, double arrow head indent=1ex, font=\tiny}}
+\tikzset{IO entity/.style={tape, thick, draw, double=black, font=\large, minimum width=2.5cm, fill=white}}
+\tikzset{IO arrow/.style={single arrow, draw, black, double=red!20, fill=blue!80!red!20, single arrow head extend=.1cm, font=\tiny, single arrow head indent=0cm }}
+\tikzset{IO group/.style={cloud, draw, aspect=2, double=yellow, thin, red!100!black!100}}
+
+\tikzset{Normal error/.style={font=\fontfamily{ppl}\fontsize{1cm}{1.2cm}\selectfont}}
+\tikzset{Valid data/.style={font=\huge}}
 
 
-%\section{Results \& Discussion}
+\section{General idea}
 
-%\subsection{Human Background Variation Frequency Database}
-%\begin{frame}[fragile]
-%    \frametitle{Standalone system}
-%    \begin{center}
-%        %\scalefont{0.01}
-%        \begin{tikzpicture}[
-%                explanation text/.style={red, text width=9cm, text ragged},
-%                sequencing center/.style={chamfered rectangle, red, double=black, draw, chamfered rectangle xsep=0.2cm, chamfered rectangle ysep=0.2cm, minimum width=4cm, minimum height=2.2cm},
-%                center name text/.style={font=\scriptsize},
-%                single database/.style={shape aspect=0.08,cylinder,blue!50!black!50,shape border rotate=90,draw,font=\tiny,bottom color=red!50!black!20,top color=white, minimum height=1.2cm, minimum width=2cm},
-%                IO/.style={tape, draw, double=black},
-%            ]
-%
-%            \draw[step=1, guide lines] (-5.3,-3.3) grid (5.3,3.3);
-%
-%            \draw<1-2> (-0.2, 3.0) node [explanation text] {Explanation 1 will be here later.};
-%            \draw<1-2> (-0.2, 2.5) node [explanation text] {Explanation 2 will be here later as well.};
-%            \draw<1-2> (-0.2, 2.0) node [explanation text] {And the same for Explanation 3.};
-%
-%
-%            
-%            \pgftransformshift{\pgfpoint{0cm}{-1cm}}
-%            \draw<1-2> (0,0) node [sequencing center]{} ;
-%            \draw<1-2> (0,0.9) node [center name text] {\bf Sequencing center};
-%            \draw<1-2> (0,-0.1) node [single database] (single_DB) {database};
-%
-%            \draw<1-2> (-3.5,0) node [IO] (input_A) {Input};
-%            \draw<1-2> (3.5,0) node [IO] (output_A) {Output};
-%
-%            
-%            
-%
-%
-%        \end{tikzpicture}
-%    \end{center}
-%\end{frame}
-
+\subsection{Overview}
 \begin{frame}[fragile]
-    \frametitle{Multicenter}
+    \frametitle{Overview}
     \begin{center}
-        %\scalefont{0.01}
-        \begin{tikzpicture}[
-                explanation box/.style={shape=rectangle, draw, red, minimum width=10.5cm, minimum height=1.7cm, font=\scriptsize},
-                explanation text/.style={red, font=\scriptsize},
-                sequencing center/.style={chamfered rectangle, red, double=black, draw, chamfered rectangle xsep=0.2cm, chamfered rectangle ysep=0.2cm, minimum width=4cm, minimum height=2.2cm},
-                center name text/.style={font=\scriptsize},
-                single database/.style={shape aspect=0.08,cylinder,blue!50!black!50,shape border rotate=90,draw,bottom color=red!50!black!20,top color=white, minimum height=1.2cm, minimum width=2cm},
-                master database/.style={shape aspect=0.08,cylinder,blue!50!black!50,shape border rotate=90,draw,font=\tiny,bottom color=red!50!black!20,top color=white},
-                slave database/.style={shape aspect=0.08,cylinder,blue!50!black!50,shape border rotate=90,draw,font=\tiny,bottom color=blue!20!black!20,top color=white},
-                master updated/.style={starburst, draw, double=black, minimum width=3.5cm, minimum height=1.9cm},
-                slave updated/.style={starburst, draw, double=black, minimum width=2.7cm, minimum height=1.7cm},
-                exchange arrow/.style={double arrow, draw, black, double=red!20, fill=blue!80!red!20, double arrow head indent=1ex, font=\tiny},
-                IO/.style={tape, draw, double=black},
-            ]
-
+        \begin{tikzpicture}
             \draw[step=1, guide lines] (-5.3,-3.3) grid (5.3,3.3);
+            \draw (0, 2.4) node [explanation box] (explanation_box){};
 
-            \draw<1> (0, 2.4) node [explanation box] (explanation_box){};
 
-            %\draw node [below right=0.1cm of explanation_box.north west, explanation text] (text_1) {Let's start by every centers only have variant frequencies gathered by themself.};
-            \draw node [below right=0.1cm of explanation_box.north west, explanation text] (text_1) {\begin{itemize}\item Let's start by every centers only have variant frequencies gathered by themself.\end{itemize}};
-
-%            \draw<1> (-0.2, 2.5) node [explanation section] {\begin{itemize}\item Let's start by every centers only have variant frequencies gathered by themself.\end{itemize}};
-%            \draw<2> (-0.2, 2.5) node [explanation section] {\begin{itemize}\item Once the centers exchange their data, they will only make a copy of databases from other center and keep each of them in the separate databases.\end{itemize}};
-            
-%            \draw<3-5> (-0.2, 3.0) node [explanation text] {Explanation 1 will be here later.};
-%            \draw<3-5> (-0.2, 2.5) node [explanation text] {Explanation 2 will be here later as well.};
-%            \draw<3-5> (-0.2, 2.0) node [explanation text] {And the same for Explanation 3.};
+            \draw<1> node [below right=0.1cm of explanation_box.north west, explanation text] {\nohyphens{We will start the sample exchange scenario by letting every centers only have variant frequencies gathered by themselves.}};
+            \draw<2> node [below right=0.1cm of explanation_box.north west, explanation text] {\nohyphens{First, let center A exchanges the data with center B. Center A will have a copy of database B and center will have a copy of database A.}};
+                \draw<3> node [below right=0.1cm of explanation_box.north west, explanation text] {\nohyphens{Then, center A exchanges the data with center C. Center C will have a copy of databases from center A, which are databases A and B. And center A will have a copy of database C.}};
+            \draw<4> node [below right=0.1cm of explanation_box.north west, explanation text] {\nohyphens{In conclusion, once the centers exchange their data, they will only make a copy of databases from other centers and keep each of them in the separate databases.}};
 
 
             
             \pgftransformshift{\pgfpoint{-2.7cm}{0.6cm}}
-            \draw<1-4> (0,0) node [sequencing center]{} ;
-            \draw<1-4> (0,0.9) node [center name text] {\bf Sequencing center A};
-            \draw<1> (0,-0.1) node [single database] (single_DB_A) {database A};
-            \draw<2-5> (0,0.2) node [master database] (DB_A_A) {database A(master)};
-            \draw<2-5> (-0.9,-0.5) node [slave database] (DB_A_B) {database B};
-            \draw<2-5> (0.9,-0.5) node [slave database] (DB_A_C) {database C};
-            \draw<3-5> (0,0.25) node [master updated, green] {};
-            \draw<3-5> (-0.9,-0.45) node [slave updated, yellow] {};
-            \draw<3-5> (0.9,-0.45) node [slave updated, yellow] {};
+            \draw<1-> (0,0) node [sequencing center]{} ;
+            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center A};
+            \draw<1> (0,-0.1) node [single database]  {database A};
+            \draw<2-> (0,0.2) node [master database]  {database A(master)};
+            \draw<2-> (-0.9,-0.5) node [slave database]  {database B};
+            \draw<3-> (0.9,-0.5) node [slave database]  {database C};
+            \draw<2,4> (-0.9,-0.45) node [slave updated, yellow] {};
+            \draw<3-> (0.9,-0.45) node [slave updated, yellow] {};
 
-            %\draw<1-2> (4,0) node [IO] (input_A) {input};
 
-            
-            
+
             \pgftransformshift{\pgfpoint{5.4cm}{0cm}}
-            \draw<1-4> (0,0) node [sequencing center] {};
-            \draw<1-4> (0,0.9) node [center name text] {\bf Sequencing center B};
-            \draw<1> (0,-0.1) node [single database] (single_DB_B) {database B};
-            \draw<2-5> (0,0.2) node [master database] (DB_B_B) {database B(master)};
-            \draw<2-5> (-0.9,-0.5) node [slave database] (DB_B_A) {database A};
-            \draw<2-5> (0.9,-0.5) node [slave database] (DB_B_C) {database C};
-            \draw<3-5> (0,0.25) node [master updated, green] {};
-            \draw<3-5> (-0.9,-0.45) node [slave updated, yellow] {};
-            \draw<3-5> (0.9,-0.45) node [slave updated, yellow] {};
+            \draw<1-> (0,0) node [sequencing center] {};
+            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center B};
+            \draw<1> (0,-0.1) node [single database]  {database B};
+            \draw<2-> (0,0.2) node [master database]  {database B(master)};
+            \draw<2-> (-0.9,-0.5) node [slave database]  {database A};
+            \draw<4-> (0.9,-0.5) node [slave database]  {database C};
+            \draw<2,4> (-0.9,-0.45) node [slave updated, yellow] {};
+            \draw<4-> (0.9,-0.45) node [slave updated, yellow] {};
 
             
             
             \pgftransformshift{\pgfpoint{-2.7cm}{-2.6cm}}
-            \draw<1-4> (0,0) node [sequencing center] {};
-            \draw<1-4> (0,0.9) node [center name text] {\bf Sequencing center C};
-            \draw<1> (0,-0.1) node [single database] (single_DB_C) {database C};
-            \draw<2-5> (0,0.2) node [master database] (DB_C_C) {database C(master)};
-            \draw<2-5> (-0.9,-0.5) node [slave database] (DB_C_A) {database A};
-            \draw<2-5> (0.9,-0.5) node [slave database] (DB_C_B) {database B};
-            \draw<3-5> (0,0.25) node [master updated, green] {};
-            \draw<3-5> (-0.9,-0.45) node [slave updated, yellow] {};
-            \draw<3-5> (0.9,-0.45) node [slave updated, yellow] {};
+            \draw<1-> (0,0) node [sequencing center] {};
+            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center C};
+            \draw<1-2> (0,-0.1) node [single database]  {database C};
+            \draw<3-> (0,0.2) node [master database]  {database C(master)};
+            \draw<3-> (-0.9,-0.5) node [slave database]  {database A};
+            \draw<3-> (0.9,-0.5) node [slave database]  {database B};
+            \draw<3-> (-0.9,-0.45) node [slave updated, yellow] {};
+            \draw<3-> (0.9,-0.45) node [slave updated, yellow] {};
 
-            %\node[cloud, draw, fill=gray!20, aspect=2] {ABC};
+
+
             \pgftransformshift{\pgfpoint{0cm}{2.0cm}}
-            \draw<2> (-2.0,-1.1) node [exchange arrow, rotate=-50] {bvd-merge};
-            \draw<2> (2.0,-1.1) node [exchange arrow, rotate=50] {bvd-merge};
-            \draw<2> (0.0,0.6) node [exchange arrow] {bvd-merge};
+            \draw<3-> (-2.0,-1.1) node [exchange arrow, rotate=-50] {bvd-merge};
+            \draw<4> (2.0,-1.1) node [exchange arrow, rotate=50] {bvd-merge};
+            \draw<2,4> (0.0,0.6) node [exchange arrow] {bvd-merge};
 
         \end{tikzpicture}
     \end{center}
 \end{frame}
 
-%\begin{frame}
-%    \frametitle{Filtering performance}
-%    \begin{itemize}
-%        \item<1-> Purpose
-%            \begin{itemize}
-%                \item<1-> To see how much variants are dropped after filtering against this database
-%            \end{itemize}
-%        \item<2-> Test data
-%            \begin{itemize}
-%                \item<2-> 200danes \emph{\{Li et al. 2010\}}
-%                \item<2-> 1000 Genomes
-%            \end{itemize}
-%    \end{itemize}
-%\end{frame}
-%
-%\begin{frame}
-%    \frametitle{Filtering performance}
+\subsection{Read \& Write}
+\begin{frame}[fragile]
+    \frametitle{Read \& Write}
+    \begin{center}
+        \begin{tikzpicture}
+            \draw[step=1, guide lines] (-5.3,-3.3) grid (5.3,3.3);
+            \draw (0, 2.4) node [explanation box] (explanation_box){};
+
+
+            \draw<1> node [below right=0.1cm of explanation_box.north west, explanation text, text ragged] {\nohyphens{Reading \& Writing the database will be a little complicated under this concept}};
+            \draw<2> node [below right=0.1cm of explanation_box.north west, explanation text, text ragged] {\nohyphens{As it should be, the output, which is retrieved by using bvd-get, is the accumulated variant frequencies from all databases, both master and copies, in that center.}};
+            \draw<3> node [below right=0.1cm of explanation_box.north west, explanation text, text ragged] {\nohyphens{But the update done by bvd-add will be done on the master database only.}};
+            
+            \pgftransformshift{\pgfpoint{-2.7cm}{0.6cm}}
+            \draw<1-> (0,0) node [sequencing center]{} ;
+            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center A};
+            \draw<1-> (0,0.2) node [master database]  {database A(master)};
+            \draw<1-> (-0.9,-0.5) node [slave database]  {database B};
+            \draw<1-> (0.9,-0.5) node [slave database]  {database C};
+
+            \draw<1-2> (6.0,0) node [IO entity] (output) {Output};
+            \draw<1,3> (0,-3.0) node [IO entity] (input) {Input};
+
+            \draw<1-2> (3.2,0) node [IO arrow, minimum height=2.0cm] {bvd-get};
+            \draw<1,3> (0,-2) node [IO arrow, shape border rotate=90] {bvd-add};
+
+            \draw<2> (0,-0.1) node[IO group, cloud puffs=15, minimum width=4.5cm, minimum height=2.5cm] {};
+            \draw<3> (0,0.3) node[IO group, cloud puffs=15, minimum width=3.0cm, minimum height=1.7cm] {};
+
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+
+\section{Concern \& Solution}
+
+\subsection{Mutiple exchange \& obsolete data}
+\begin{frame}[fragile]
+    \frametitle{Multiple exchange \& obsolete data}
+    \begin{center}
+        \begin{tikzpicture}
+            \draw[step=1, guide lines] (-5.3,-3.3) grid (5.3,3.3);
+            \draw (0, 2.4) node [explanation box] (explanation_box){};
+
+
+            \draw<1> node [below right=0.1cm of explanation_box.north west, explanation text, text ragged] {\nohyphens{This problem can be easily found and can be simulated by starting from no exchange between any centers.}};
+            \draw<2> node [below right=0.1cm of explanation_box.north west, explanation text, text ragged] {\nohyphens{Then center A and B exchange their data.}};
+            \draw<3> node [below right=0.1cm of explanation_box.north west, explanation text, text ragged] {\nohyphens{Then another set of variant frequencies is inserted into the database of center A.}};
+            \draw<4> node [below right=0.1cm of explanation_box.north west, explanation text, text ragged] {\nohyphens{And center A and C exchange their data. With this, the copy of database A in center C is more up-to-date than that in center B.}};
+            \draw<5> node [below right=0.1cm of explanation_box.north west, explanation text, text ragged] {\nohyphens{Later when center B and C exchange their data, {\bf \color{black}the database A in center B or C may not be up-to-date} if it doesn't have any mechanics to prevent this problem.}};
+            \draw<6> node [below right=0.1cm of explanation_box.north west, explanation text, text ragged] {\nohyphens{To prevent this, every time that the database is written, {\bf \color{black}Time Stamp}  \color{red}is recorded to the database so that it can be used later during data exchange to find the most up-to-date database.}};
+
+
+            \pgftransformshift{\pgfpoint{-2.7cm}{0.6cm}}
+            \draw<1-> (0,0) node [sequencing center]{} ;
+            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center A};
+            \draw<1> (0,-0.1) node [single database]  {database A};
+            \draw<2-> (0,0.2) node [master database]  {database A(master)};
+            \draw<2-> (-0.9,-0.5) node [slave database]  {database B};
+            \draw<4-> (0.9,-0.5) node [slave database]  {database C};
+            \draw<3-> (0,0.25) node [master updated, green] {};
+            \draw<2-> (-0.9,-0.45) node [slave updated, yellow] {};
+            \draw<4-> (0.9,-0.45) node [slave updated, yellow] {};
+
+            \draw<3> (-1,-3.0) node [IO entity] (input) {Input};
+
+            \draw<3> (-1,-2) node [IO arrow, shape border rotate=90] {bvd-add};
+
+
+
+            \pgftransformshift{\pgfpoint{5.4cm}{0cm}}
+            \draw<1-> (0,0) node [sequencing center] {};
+            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center B};
+            \draw<1> (0,-0.1) node [single database]  {database B};
+            \draw<2-> (0,0.2) node [master database]  {database B(master)};
+            \draw<2-> (-0.9,-0.5) node [slave database]  {database A};
+            \draw<5-> (0.9,-0.5) node [slave database]  {database C};
+            \draw<2-4> (-0.9,-0.45) node [slave updated, yellow] {};
+            \draw<5> (-0.9,-0.45) node [slave updated, red] {};
+            \draw<6> (-0.9,-0.45) node [slave updated, green] {};
+            \draw<5-> (0.9,-0.45) node [slave updated, yellow] {};
+            \draw<5> (-0.9,-0.5) node [Normal error]{?};
+
+            
+            
+            \pgftransformshift{\pgfpoint{-2.7cm}{-2.6cm}}
+            \draw<1-> (0,0) node [sequencing center] {};
+            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center C};
+            \draw<1-3> (0,-0.1) node [single database]  {database C};
+            \draw<4-> (0,0.2) node [master database]  {database C(master)};
+            \draw<4-> (-0.9,-0.5) node [slave database]  {database A};
+            \draw<5-> (0.9,-0.5) node [slave database]  {database B};
+            \draw<4,6> (-0.9,-0.45) node [slave updated, green] {};
+            \draw<5> (-0.9,-0.45) node [slave updated, red] {};
+            \draw<5-> (0.9,-0.45) node [slave updated, yellow] {};
+
+            \draw<5> (-0.9,-0.5) node [Normal error]{?};
+
+            \pgftransformshift{\pgfpoint{0cm}{2.0cm}}
+            \draw<4> (-2.0,-1.1) node [exchange arrow, rotate=-50] {bvd-merge};
+            \draw<5-> (2.0,-1.1) node [exchange arrow, rotate=50] {bvd-merge};
+            \draw<2> (0.0,0.6) node [exchange arrow] {bvd-merge};
+            
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+
+\subsection{Data duplication}
+\begin{frame}[fragile]
+    \frametitle{Data duplication \& solution}
+    \begin{center}
+        \begin{tikzpicture}
+            \draw[step=1, guide lines] (-5.3,-3.3) grid (5.3,3.3);
+
+
+            \draw (2.4,0) node [explanation box, minimum width=5.7cm, minimum height=4.5cm] (explanation_box){};
+            \draw<1> node [below right=0.1cm of explanation_box.north west, explanation text, text ragged, text width=5.4cm] {\nohyphens{As bvd-add always did, it still check if inserting content is already in the system. The only difference is that it's not only check with the target database, master, but {\bf \color{black} bvd-add will check with all the databases in the system}, both master and copies, in this case, A, B and C.}};
+
+
+            \pgftransformshift{\pgfpoint{-2.7cm}{0.6cm}}
+            \draw<1-> (0,0) node [sequencing center]{} ;
+            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center A};
+            \draw<1-> (0,0.2) node [master database]  {database A(master)};
+            \draw<1-> (-0.9,-0.5) node [slave database]  {database B};
+            \draw<1-> (0.9,-0.5) node [slave database]  {database C};
+
+            \draw<1-> (0,-3.0) node [IO entity] (input) {Input};
+
+            \draw<1-> (0,-2) node [IO arrow, shape border rotate=90] {bvd-add};
+
+            \draw<1> (0,-0.1) node[IO group, cloud puffs=15, minimum width=4.5cm, minimum height=2.5cm] {};
+
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+
+\subsection{Confidential issue}
+\begin{frame}[fragile]
+    \frametitle{Confidential issue}
+    \begin{center}
+        \begin{tikzpicture}
+            \draw[step=1, guide lines] (-5.3,-3.3) grid (5.3,3.3);
+            \draw (0, 2.4) node [explanation box] (explanation_box){};
+
+
+            \draw<1> node [below right=0.1cm of explanation_box.north west, explanation text, text ragged] {\nohyphens{\scriptsize This database exchange is a process of copying the whole database, this mean that, {\bf \color{black}as long as there is no confidential issue in each center, there is also no confidential issue in this process.}}};
+
+
+
+
+            \pgftransformshift{\pgfpoint{-2.7cm}{0.6cm}}
+            \draw<1-> (0,0) node [sequencing center]{} ;
+            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center A};
+            \draw<1-> (0,0.2) node [master database]  {database A(master)};
+            \draw<1-> (-0.9,-0.5) node [slave database]  {database B};
+            \draw<1-> (0.9,-0.5) node [slave database]  {database C};
+
+            \draw<1> (0,0.2) node [Valid data]{\color{green}\checkmark};
+            \draw<1> (0,0.3) node[IO group, cloud puffs=15, minimum width=3.0cm, minimum height=1.7cm, green, double=black] {};
+
+
+
+            \pgftransformshift{\pgfpoint{5.4cm}{0cm}}
+            \draw<1-> (0,0) node [sequencing center] {};
+            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center B};
+            \draw<1-> (0,0.2) node [master database]  {database B(master)};
+            \draw<1-> (-0.9,-0.5) node [slave database]  {database A};
+            \draw<1-> (0.9,-0.5) node [slave database]  {database C};
+
+            \draw<1> (0,0.2) node [Valid data]{\color{green}\checkmark};
+            \draw<1> (0,0.3) node[IO group, cloud puffs=15, minimum width=3.0cm, minimum height=1.7cm, green, double=black] {};
+
+            
+            
+            \pgftransformshift{\pgfpoint{-2.7cm}{-2.6cm}}
+            \draw<1-> (0,0) node [sequencing center] {};
+            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center C};
+            \draw<1-> (0,0.2) node [master database]  {database C(master)};
+            \draw<1-> (-0.9,-0.5) node [slave database]  {database A};
+            \draw<1-> (0.9,-0.5) node [slave database]  {database B};
+
+            \draw<1> (0,0.2) node [Valid data]{\color{green}\checkmark};
+            \draw<1> (0,0.3) node[IO group, cloud puffs=15, minimum width=3.0cm, minimum height=1.7cm, green, double=black] {};
+
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+
+%\begin{frame}[fragile]
+%    \frametitle{Template}
 %    \begin{center}
-%        \begin{tikzpicture}[
-%                terminal/.style={rectangle,rounded corners=2mm,very thick,draw=red!50!black!50,top color=white,bottom color=red!50!black!20,font=\scriptsize},
-%                transition text/.style={font=\scriptsize},
-%                database/.style={shape aspect=0.25,cylinder,blue!50!black!50,shape border rotate=90,draw,font=\scriptsize,bottom color=blue!20!black!20,top color=white}
-%            ]
+%        \begin{tikzpicture}
+%            \draw[step=1, guide lines] (-5.3,-3.3) grid (5.3,3.3);
+%            \draw (0, 2.4) node [explanation box] (explanation_box){};
 %
-%            \draw[step=1, guide lines] (-5.3,-3.1) grid (5.3,3.1);
 %
-%        \draw (-0.2, 2.7) node(ref) [red, text width=10cm, text ragged] {\begin{itemize}\item Evaluation method\end{itemize}};
+%            \draw<1> node [below right=0.1cm of explanation_box.north west, explanation text] {Let's start by every centers only have variant frequencies gathered by themselves.};
 %
-%            \draw<1-> (-2,0) node [database] (200danes) {200danes};
-%            \draw<1-> (1,2) node [terminal] (test_variants) {Test variants};
-%            \draw<1-> (1,0) node [database] (1000genomes) {1000 Genomes};
-%            \draw<1-> (1,-2) node [database] (hbvdb) {HBVDB};
 %
-%          %\draw<2> [->,red,thick] (-3.5,-0.5) --  (200danes);
-%          %\draw<2> [->,red,thick] (3,0) --  (1000genomes);
+%            
+%            \pgftransformshift{\pgfpoint{-2.7cm}{0.6cm}}
+%            \draw<1-> (0,0) node [sequencing center]{} ;
+%            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center A};
+%            \draw<1> (0,-0.1) node [single database]  {database A};
+%            \draw<2-> (0,0.2) node [master database]  {database A(master)};
+%            \draw<2-> (-0.9,-0.5) node [slave database]  {database B};
+%            \draw<2-> (0.9,-0.5) node [slave database]  {database C};
+%            \draw<3-> (0,0.25) node [master updated, green] {};
+%            \draw<3-> (-0.9,-0.45) node [slave updated, yellow] {};
+%            \draw<3-> (0.9,-0.45) node [slave updated, yellow] {};
 %
-%            \draw<3-5> [->, thick] (200danes) to [bend left=45] node[auto,swap,transition text] {10\%}  (test_variants);
-%            \draw<3-5> [->, thick] (200danes) to [bend right=45] node[auto,swap,transition text] {bvd-add} node[auto,transition text] {90\%}  (hbvdb);
-%            \draw<3-5> [->, thick] (test_variants) -- node[right,transition text] {192,864 variants}  (1000genomes);
-%            \draw<4-> [->, thick] (1000genomes) -- node[right,transition text] {53,872 variants left}  (hbvdb);
-%            \draw<5-> [->, thick] (hbvdb) -- node[right,transition text] {48,757 variants left}  (1,-3);
-%            \draw<6-> [red, thick] (1.55,-0.9) ellipse (0.5 and 0.25);
-%            \draw<6-> [red, thick] (1.55,-2.64) ellipse (0.5 and 0.25);
-%            \draw<7-> [->,red, thick] (200danes) -- node[auto,transition text] {subset}  (1000genomes);
+%
+%            
+%            
+%            \pgftransformshift{\pgfpoint{5.4cm}{0cm}}V
+%            \draw<1-> (0,0) node [sequencing center] {};
+%            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center B};
+%            \draw<1> (0,-0.1) node [single database]  {database B};
+%            \draw<2-> (0,0.2) node [master database]  {database B(master)};
+%            \draw<2-> (-0.9,-0.5) node [slave database]  {database A};
+%            \draw<2-> (0.9,-0.5) node [slave database]  {database C};
+%            \draw<3-> (0,0.25) node [master updated, green] {};
+%            \draw<3-> (-0.9,-0.45) node [slave updated, yellow] {};
+%            \draw<3-> (0.9,-0.45) node [slave updated, yellow] {};
+%
+%            
+%            
+%            \pgftransformshift{\pgfpoint{-2.7cm}{-2.6cm}}
+%            \draw<1-> (0,0) node [sequencing center] {};
+%            \draw<1-> (0,0.9) node [center name text] {\bf Sequencing center C};
+%            \draw<1> (0,-0.1) node [single database]  {database C};
+%            \draw<2-> (0,0.2) node [master database]  {database C(master)};
+%            \draw<2-> (-0.9,-0.5) node [slave database]  {database A};
+%            \draw<2-> (0.9,-0.5) node [slave database]  {database B};
+%            \draw<3-> (0,0.25) node [master updated, green] {};
+%            \draw<3-> (-0.9,-0.45) node [slave updated, yellow] {};
+%            \draw<3-> (0.9,-0.45) node [slave updated, yellow] {};
+%
+%            \pgftransformshift{\pgfpoint{0cm}{2.0cm}}
+%            \draw<2> (-2.0,-1.1) node [exchange arrow, rotate=-50] {bvd-merge};
+%            \draw<2> (2.0,-1.1) node [exchange arrow, rotate=50] {bvd-merge};
+%            \draw<2> (0.0,0.6) node [exchange arrow] {bvd-merge};
+%
 %        \end{tikzpicture}
 %    \end{center}
 %\end{frame}
+%
+
+
+
 
     
     
