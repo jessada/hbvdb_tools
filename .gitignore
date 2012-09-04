@@ -25,3 +25,4 @@ example/sample_DB/
 *.snm
 *.toc
 *.vrb
+*.old
