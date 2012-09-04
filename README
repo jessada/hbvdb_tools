@@ -19,7 +19,7 @@ The sample command to retrieve the variant frequency
 	./bin/bvd-get.pl -d example/sample_DB
 
 Please note that the database that was used in the above commands, 'example/sample_DB', is for tutorial purpose only.
-Practically, you can insert variant into the database by only
+Practically, you can insert variant frequencies into the database by only
 
 	./bin/bvd-add.pl your_input.vcf
 
