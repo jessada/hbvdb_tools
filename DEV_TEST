@@ -1,0 +1,1 @@
+make test TEST_FILES="00_test_t/*.test dev_t/*.case t/*.t" TEST_VERBOSE=1

@@ -7,8 +7,8 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME                => 'Bvdb',
     AUTHOR              => q{Jessada Thutkawkorapin <jessada@kth.se>},
-#    VERSION_FROM        => 'lib/Bvdb.pm',
-#    ABSTRACT            => 'lib/Bvdb.pm',
+    VERSION_FROM        => 'lib/Bvdb.pm',
+    ABSTRACT            => 'lib/Bvdb.pm',
     ($ExtUtils::MakeMaker::VERSION >= 0
       ? ('LICENSE'=> 'perl')
       : ()),

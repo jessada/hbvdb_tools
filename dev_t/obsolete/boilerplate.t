@@ -3,7 +3,7 @@
 use 5.006;
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More tests => 2;
 
 sub not_in_file_ok {
     my ($filename, %regex) = @_;
@@ -45,9 +45,9 @@ TODO: {
     "'version information here'"  => qr/to provide version information/,
   );
 
-  not_in_file_ok(Changes =>
-    "placeholder date/time"       => qr(Date/time)
-  );
+#  not_in_file_ok(Changes =>
+#    "placeholder date/time"       => qr(Date/time)
+#  );
 
   module_boilerplate_ok('lib/Bvdb.pm');
 

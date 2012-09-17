@@ -1,0 +1,6 @@
+##NI=8
+##ENTRIES=1.1.5.2.1_1.vcf,1.1.5.2.1_2.vcf,1.1.5.2.1_3.vcf,1.1.5.2.1_4.vcf,1.1.5.2.1_5.vcf,1.1.5.2.1_6.vcf,1.1.5.2.1_7.vcf,1.1.5.2.1_8.vcf
+##TAGS=colon_cancer,lung_cancer,prostate_cancer
+10	800001	G	A	16	colon_cancer,lung_cancer=4:lung_cancer=4:prostate_cancer=4
+10	800006	G	A	12	colon_cancer,lung_cancer=4:lung_cancer=4:prostate_cancer=2
+10	800007	G	A	12	colon_cancer,lung_cancer=4:lung_cancer=4

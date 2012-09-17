@@ -1,0 +1,293 @@
+#!perl -T
+
+#***************************************************************************************************************************
+#
+# Purpose  : To check if the test library, Bvdb_test, can function properly 
+#
+#***************************************************************************************************************************
+
+use 5.006;
+use strict;
+use warnings;
+use Test::More;
+
+use Cwd 'abs_path';
+use File::Basename;
+use Error qw(:try);
+use File::Path qw(mkpath);
+use File::Copy;
+
+use Bvdb_test qw(clear_db get_absolute_db_dir safety_check untaint compare_file compare_file_content compare_file_header file_header_exist);
+
+use constant DEFAULT_ABSOLUTE_APP_DIR => '/home/jessada/development/scilifelab/projects/hbvdb/bin/';
+use constant DEFAULT_PARTIAL_DB_DIR => 'DB';
+
+subtest 'safety_check function can validate environment correctly' => sub {
+
+    ok(safety_check(home_dir => "/home/jessada"), "Test can be done if verify the safety check with the valid home direcotry");
+    ok(! safety_check(home_dir => "/home/jess"), "Typo in verification is not allowed");
+    ok(! safety_check(home_dir => "/home/daniel"), "My supervisor is not allowed to access the unsecured environment");
+    ok(! safety_check(home_dir => "/home/fulya"), "And so my colleague");
+    ok(! safety_check(home_dir => "/home/obhama"), "Even US President is also not allowed");
+    ok(! safety_check(), "Test will not be done if verify the safety check with no arguments");
+    ok(! safety_check(home_dir => ''), "Test will not be done if verify the safety check with '' as home directory");
+
+    done_testing();
+};
+
+subtest 'get_absolute_db_dir function can return the correct directory' => sub {
+
+    is(get_absolute_db_dir(home_dir => "/home/jessada"), DEFAULT_ABSOLUTE_APP_DIR.DEFAULT_PARTIAL_DB_DIR, "get_absolute_db_dir can work with undef param"); 
+    is(get_absolute_db_dir(db_dir => '', home_dir => "/home/jessada"), DEFAULT_ABSOLUTE_APP_DIR.DEFAULT_PARTIAL_DB_DIR, "get_absolute_db_dir can work with '' param"); 
+    is(get_absolute_db_dir(db_dir => 'testing'), DEFAULT_ABSOLUTE_APP_DIR."testing", "get_absolute_db_dir can work with 'absolute dir' param"); 
+    is(get_absolute_db_dir(db_dir => '/testing/another'), "/testing/another", "get_absolute_db_dir can work with 'partial dir' param"); 
+
+    done_testing();
+};
+
+subtest 'safety_check function acknowledge risks in get_absolute_db_dir function' => sub {
+
+    my $exception_found;
+
+    $exception_found = 0;
+    try {
+	get_absolute_db_dir();
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "get_absolute_db_dir function will raise the exception if trying to get the default absolute DB dir with undef verification");
+
+    $exception_found = 0;
+    try {
+	get_absolute_db_dir(db_dir => '', home_dir => '');
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "The same go for '' verification");
+
+    $exception_found = 0;
+    try {
+	get_absolute_db_dir(db_dir => 'DB', home_dir => '/home/ohbama'), "\n";
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "Mr. President with unexpectedly correct default DB directory is not allowed to access as well");
+
+    done_testing();
+};
+
+sub create_test_dir {
+    my (%args) = @_;
+
+    my $test_dir      = untaint(get_absolute_db_dir(%args));
+    my $sample_DB_dir = untaint(dirname(abs_path($0))."/sample_good_DB");
+    mkpath $test_dir;
+    copy($sample_DB_dir."/bvdb", $test_dir);
+    copy($sample_DB_dir."/bvdb_chksum", $test_dir);
+}
+
+subtest 'clear_db is functioned properly' => sub {
+
+    my $test_dir;
+    my $db_clear;
+
+    $db_clear = 0;
+    $test_dir = get_absolute_db_dir(db_dir => "__TEST");
+    create_test_dir(db_dir => "__TEST");
+    clear_db(db_dir => "__TEST");
+    if ( ! -e $test_dir."/bvdb") {
+	$db_clear = 1;
+    }
+    ok($db_clear, "clear_db can clear non-default relate-path database.");
+
+    $db_clear = 0;
+    $test_dir = get_absolute_db_dir(db_dir => "__TEST2/test3", home_dir => "/home/jessada");
+    create_test_dir(db_dir => $test_dir, home_dir => "/home/jessada");
+    clear_db(db_dir => $test_dir);
+    if ( ! -e $test_dir."/bvdb") {
+	$db_clear = 1;
+    }
+    ok($db_clear, "clear_db can clear non-default absolute-path database.");
+
+    $db_clear = 0;
+    $test_dir = get_absolute_db_dir(home_dir => "/home/jessada");
+    create_test_dir(home_dir => "/home/jessada");
+    clear_db(home_dir => "/home/jessada");
+    if ( ! -e $test_dir."/bvdb") {
+	$db_clear = 1;
+    }
+    ok($db_clear, "And so default database with proper authentication.");
+
+    my $exception_found = 0;
+    $test_dir = get_absolute_db_dir(db_dir => '', home_dir => "/home/jessada");
+    create_test_dir(home_dir => "/home/jessada");
+    try {
+	clear_db(home_dir => "/hom");
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "Exception is triggered when it try to access default database without permission.");
+
+    done_testing();
+};
+
+subtest 'compare_file function can correctly check if two file are exactly the same' => sub {
+
+    my $sample_good_DB_dir     = untaint(dirname(abs_path($0))."/sample_good_DB");
+    my $sample_bad_DB_dir      = untaint(dirname(abs_path($0))."/sample_bad_DB");
+    my $sample_expected_DB_dir = untaint(dirname(abs_path($0))."/sample_expected_DB");
+
+    my $exception_found;
+
+    compare_file(got => "$sample_good_DB_dir/bvdb", expected => "$sample_expected_DB_dir/bvdb", test_description => "good result is compared correctly");
+    pass("bad result cannot be tested using Test::Diffrences");
+    #********************** Dont remove **************************
+    #compare_file(got => "$sample_bad_DB_dir/bvdb", expected => "$sample_expected_DB_dir/bvdb", test_description => "bad result is identified");
+    #********************** Dont remove **************************
+
+    $exception_found = 0;
+    try {
+	compare_file(expected => "$sample_expected_DB_dir/bvdb", test_description => "'got' file doesn't exist");
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "exception is triggered if 'got' file doesn't exist");
+
+    $exception_found = 0;
+    try {
+	compare_file(got => "$sample_bad_DB_dir/bvdb", expected => "$sample_expected_DB_dir/bvdbe", test_description => "'expected' file doesn't exist");
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "exception is triggered if 'expected' file doesn't exist");
+
+    done_testing();
+};
+
+subtest 'compare_file_content function can correctly compare the content of two files' => sub {
+
+    my $sample_good_DB_dir     = untaint(dirname(abs_path($0))."/sample_good_DB");
+    my $sample_bad_DB_dir      = untaint(dirname(abs_path($0))."/sample_bad_DB");
+    my $sample_expected_DB_dir = untaint(dirname(abs_path($0))."/sample_expected_DB");
+
+    my $exception_found;
+
+    compare_file_content(got => "$sample_good_DB_dir/bvdb", expected => "$sample_expected_DB_dir/bvdb", test_description => "good result is compared correctly");
+    pass("bad result cannot be tested using Test::Diffrences");
+    #********************** Dont remove **************************
+    #compare_file_content(got => "$sample_bad_DB_dir/bvdb", expected => "$sample_expected_DB_dir/bvdb", test_description => "bad result is identified");
+    #********************** Dont remove **************************
+
+    $exception_found = 0;
+    try {
+	compare_file_content(expected => "$sample_expected_DB_dir/bvdb", test_description => "'got' file doesn't exist");
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "exception is triggered if 'got' file doesn't exist");
+
+    $exception_found = 0;
+    try {
+	compare_file_content(got => "$sample_bad_DB_dir/bvdb", expected => "$sample_expected_DB_dir/bvdbe", test_description => "'expected' file doesn't exist");
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "exception is triggered if 'expected' file doesn't exist");
+
+    done_testing();
+};
+
+subtest 'compare_file_header function can compare one header line correctly' => sub {
+
+    my $sample_good_DB_dir     = untaint(dirname(abs_path($0))."/sample_good_DB");
+    my $sample_bad_DB_dir      = untaint(dirname(abs_path($0))."/sample_bad_DB");
+    my $sample_expected_DB_dir = untaint(dirname(abs_path($0))."/sample_expected_DB");
+
+    my $exception_found;
+
+    compare_file_header(got => "$sample_good_DB_dir/bvdb", expected => "$sample_expected_DB_dir/bvdb", header => "DB_ID", test_description => "good DB header is compared correctly");
+    compare_file_header(got => "$sample_good_DB_dir/vcf_result", expected => "$sample_expected_DB_dir/vcf_result", header => "contig", test_description => "contig header is compared correctly");
+    pass("bad result cannot be tested using Test::Diffrences");
+    #********************** Dont remove **************************
+    #compare_file_header(got => "$sample_bad_DB_dir/bvdb", expected => "$sample_expected_DB_dir/bvdb", header => "DB_ID", test_description => "bad header is identified");
+    #compare_file_header(got => "$sample_bad_DB_dir/vcf_result", expected => "$sample_expected_DB_dir/vcf_result", header => "contig", test_description => "bad header is identified");
+    #********************** Dont remove **************************
+
+    $exception_found = 0;
+    try {
+	compare_file_header(expected => "$sample_expected_DB_dir/bvdb");
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "exception is triggered if 'got' file doesn't exist");
+
+    $exception_found = 0;
+    try {
+	compare_file_header(got => "$sample_bad_DB_dir/bvdb", expected => "$sample_expected_DB_dir/bvdbe");
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "exception is triggered if 'expected' file doesn't exist");
+
+    $exception_found = 0;
+    try {
+	compare_file_header(got => "$sample_good_DB_dir/bvdb", expected => "$sample_expected_DB_dir/bvdb");
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "exception is triggered if 'header' key doesn't exist");
+
+    done_testing();
+};
+
+subtest 'file_header_exist function can check the existance of a header line correctly' => sub {
+
+    my $sample_good_DB_dir     = untaint(dirname(abs_path($0))."/sample_good_DB");
+    my $sample_bad_DB_dir      = untaint(dirname(abs_path($0))."/sample_bad_DB");
+    my $sample_expected_DB_dir = untaint(dirname(abs_path($0))."/sample_expected_DB");
+
+    my $exception_found;
+
+    ok(file_header_exist(got => "$sample_good_DB_dir/bvdb", header => "DB_ID", format => "[0-9a-f]{12}[0-9]{10}"), "This function can correctly check the header format");
+    ok(! file_header_exist(got => "$sample_bad_DB_dir/bvdb", header => "DB_ID", format => "[0-9a-f]{12}[0-9]{10}"), "It can check if the format is incorrect");
+    ok(file_header_exist(got => "$sample_good_DB_dir/bvdb", header => "DB_ID", format => "\\w{22}"), "This format feature also can check the length of the value");
+    ok(! file_header_exist(got => "$sample_bad_DB_dir/bvdb", header => "DB_ID", format => "\\w{22}"), "Which can identify the value of header with invalid length");
+    ok(file_header_exist(got => "$sample_good_DB_dir/bvdb", header => "ENTRIES"), "It can also check if the header is existed without any formating");
+    ok(! file_header_exist(got => "$sample_bad_DB_dir/bvdb", header => "ENTRIES"), "And it can identify if the header is not found");
+    ok(file_header_exist(got => "$sample_good_DB_dir/bvdb", header => "TAGS", count => 1), "It can count the number of the header found");
+    ok(! file_header_exist(got => "$sample_bad_DB_dir/bvdb", header => "TAGS", count => 1), "The same, if the number of the header is incorrect, it will notify");
+    ok(file_header_exist(got => "$sample_good_DB_dir/bvdb", header => "CONTIG"), "Multiple headers also work here");
+    ok(! file_header_exist(got => "$sample_good_DB_dir/bvdb", header => "CONTIG", count => 1), "It won't work with invalid 'count' number");
+
+    $exception_found = 0;
+    try {
+	file_header_exist(got => "$sample_good_DB_dir/bvdb", format => "[0-9a-f]{12}[0-9]{10}");
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "exception is triggered if 'header' key doesn't exist");
+
+    $exception_found = 0;
+    try {
+	file_header_exist(header => "DB_ID", format => "[0-9a-f]{12}[0-9]{10}");
+    } catch Error with {
+	$exception_found = 1;
+    };
+    ok($exception_found, "exception is triggered if 'got' key doesn't exist");
+
+    done_testing();
+};
+
+sub dont_forget {
+    my ($msg) = @_;
+    fail("$msg");
+}
+
+TODO: {
+    local $TODO = "Here you go";
+
+
+
+}
+
+done_testing();

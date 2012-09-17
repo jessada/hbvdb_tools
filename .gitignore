@@ -2,11 +2,14 @@
 src/
 .project
 bin/DB/
+bin/_*
 *.log
 blib/
+presentation
 Makefile
 pm_to_blib
 MYMETA.yml
+t/obsolete
 *.swp
 *#
 *.swo

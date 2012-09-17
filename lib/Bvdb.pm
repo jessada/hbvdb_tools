@@ -180,7 +180,7 @@ sub new
     #get build version
     $$self{buildver}       =  DEFAULT_BUILD_VER unless defined($$self{buildver});
     if ( ! valid_buildver($$self{buildver})) {
-        $self->throw("invalid build version \"$$self{buildver}\". Currently, hbvdb-tools only support version ".join(',', get_buildvers()) );
+        $self->throw("invalid build version \"$$self{buildver}\". Currently, hbvdb-tools only supports version ".join(',', get_buildvers()) );
     }
 
     #define location of the database.
@@ -331,7 +331,7 @@ sub _init_tmp_db
     } else {
         #If no database id
         if ( ! $$self{header}->{db_id} ) {
-            my $mac = `/sbin/ifconfig eth0 | grep HWaddr | awk '{ print \$NF}' | sed 's/://g'`;
+            my $mac = `/sbin/ifconfig eth0 | /bin/grep HWaddr | /usr/bin/awk '{ print \$NF}' | /bin/sed 's/://g'`;
             $mac =~ s/\s+$//;
             print {$$self{_tmp_db_fh}} "##".HEADER_DB_ID."=".$mac.time()."\n";
         } else {

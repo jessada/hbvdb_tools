@@ -1,0 +1,4 @@
+##fileformat=VCFv4.1
+10	800001	.	G	A	.	.	BVDMAF=0.5
+10	800006	.	G	A	.	.	BVDMAF=0.25
+10	800007	.	G	A	.	.	BVDMAF=0.25
