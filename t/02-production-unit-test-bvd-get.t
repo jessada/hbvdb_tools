@@ -656,7 +656,7 @@ The purpose of the cases in this group is to check if bvd-get can generate the c
 
 sub case_bvd_get_3_1_1_1_1 {
 
-    subtest "case bvd-get.3.1.1.1.1 - bvd-get can generate the correct output in the avdb format using option '--buildver hg18' (1st test)" => sub {
+    subtest "case bvd-get.3.1.1.1.1 - bvd-get can generate the correct output in the avdb format using option '--buildver hg18'" => sub {
 
 	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.1.1.1.1"));
 	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.1.1.1.1";
@@ -678,11 +678,11 @@ sub case_bvd_get_3_1_1_1_1 {
 	push @test_args, "--buildver";
 	push @test_args, "hg18";
 	push @test_args, "-T";
-	push @test_args, "lung_cancer,lung_cancer";
+	push @test_args, "prostate_cancer";
 	push @test_args, "--avdb";
 	exec_bvd_get(options => \@test_args, output_file => "$absolute_test_DB_dir/bvd_get_out");
         compare_file(got => "$absolute_test_DB_dir/bvd_get_out", expected => "$absolute_test_data_dir/expected_result", test_description => "The avdb output is correct");
-	#clear_db(db_dir => $absolute_test_DB_dir);
+	clear_db(db_dir => $absolute_test_DB_dir);
 
 	done_testing();
     };
@@ -695,23 +695,199 @@ sub case_bvd_get_3_1_1_1_1 {
 
 =cut
 
+sub case_bvd_get_3_1_1_2_1 {
+
+    subtest "case bvd-get.3.1.1.2.1 - bvd-get can generate the correct output in the avdb format using option '--buildver hg19'" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.1.1.2.1"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.1.1.2.1";
+
+	$source_bvdb   = "$absolute_test_data_dir/3.1.1.2.1_bvdb";
+	$source_chksum = "$absolute_test_data_dir/3.1.1.2.1_bvdb_chksum"; 
+
+	$target_bvdb   = "$absolute_test_DB_dir/bvdb";
+	$target_chksum = "$absolute_test_DB_dir/bvdb_chksum";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	mkpath $absolute_test_DB_dir;
+	copy($source_bvdb, $target_bvdb) or die "Cannot copy $source_bvdb to $target_bvdb\n";
+	copy($source_chksum, $target_chksum) or die "Cannot copy $source_chksum to $target_chksum\n";
+
+	@test_args = ();
+	push @test_args, "--database";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "--buildver";
+	push @test_args, "hg19";
+	push @test_args, "-T";
+	push @test_args, "colon_cancer";
+	push @test_args, "--avdb";
+	exec_bvd_get(options => \@test_args, output_file => "$absolute_test_DB_dir/bvd_get_out");
+        compare_file(got => "$absolute_test_DB_dir/bvd_get_out", expected => "$absolute_test_data_dir/expected_result", test_description => "The avdb output is correct");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
+
 =head2 cases subgroup bvd-get.3.1.2.x
 
 The purpose of the cases in this group is to check if bvd-get can generate the correct output in the avdb format from the default buildver, 'hg19' when the buildver option is not explicitly defined
 
     case bvd-get.3.1.2.1 :
-	bvd-get can generate the correct output in the avdb format from the default buildver, 'hg19'.
+	bvd-get can generate the correct output in the avdb format when no buildver is specified (using default buildver, 'hg19').
 
 =cut
+
+sub case_bvd_get_3_1_2_1_1 {
+
+    subtest "case bvd-get.3.1.2.1.1 - bvd-get can generate the correct output in the avdb format when no buildver is specified (using default buildver, 'hg19')" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.1.2.1.1"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.1.2.1.1";
+
+	$source_bvdb   = "$absolute_test_data_dir/3.1.2.1.1_bvdb";
+	$source_chksum = "$absolute_test_data_dir/3.1.2.1.1_bvdb_chksum"; 
+
+	$target_bvdb   = "$absolute_test_DB_dir/bvdb";
+	$target_chksum = "$absolute_test_DB_dir/bvdb_chksum";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	mkpath $absolute_test_DB_dir;
+	copy($source_bvdb, $target_bvdb) or die "Cannot copy $source_bvdb to $target_bvdb\n";
+	copy($source_chksum, $target_chksum) or die "Cannot copy $source_chksum to $target_chksum\n";
+
+	@test_args = ();
+	push @test_args, "--database";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer";
+	push @test_args, "--avdb";
+	exec_bvd_get(options => \@test_args, output_file => "$absolute_test_DB_dir/bvd_get_out");
+        compare_file(got => "$absolute_test_DB_dir/bvd_get_out", expected => "$absolute_test_data_dir/expected_result", test_description => "The avdb output is correct");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
 
 =head2 cases subgroup bvd-get.3.1.3.x
 
 The purpose of the cases in this group is to check if bvd-get can handle invalid 'buildver' option
 
     case bvd-get.3.1.3.1 :
-	bvd-get raises an exception when the invalid 'buildver' option is presented.
+	bvd-get raises an exception when the specified 'buildver' option is not supported by bvd-get while trying to generate output in the avdb format.
 
 =cut
+
+sub case_bvd_get_3_1_3_1_1 {
+
+    subtest "case bvd-get.3.1.3.1.1 - bvd-get raises an exception when the specified 'buildver' option is not supported by bvd-get while trying to generate output in the avdb format" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.1.3.1.1"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.1.3.1.1";
+
+	$source_bvdb   = "$absolute_test_data_dir/3.1.3.1.1_bvdb";
+	$source_chksum = "$absolute_test_data_dir/3.1.3.1.1_bvdb_chksum"; 
+
+	$target_bvdb   = "$absolute_test_DB_dir/bvdb";
+	$target_chksum = "$absolute_test_DB_dir/bvdb_chksum";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	mkpath $absolute_test_DB_dir;
+	copy($source_bvdb, $target_bvdb) or die "Cannot copy $source_bvdb to $target_bvdb\n";
+	copy($source_chksum, $target_chksum) or die "Cannot copy $source_chksum to $target_chksum\n";
+
+	@test_args = ();
+	push @test_args, "--database";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "--buildver";
+	push @test_args, "hg17";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer,lung_cancer";
+	push @test_args, "--avdb";
+	exec_bvd_get(options => \@test_args, error_file => "$absolute_test_DB_dir/bvd_get_error");
+	`/bin/grep "ERROR" $absolute_test_DB_dir/bvd_get_error > $absolute_test_DB_dir/got_error`;
+        compare_file(got => "$absolute_test_DB_dir/got_error", expected => "$absolute_test_data_dir/expected_error", test_description => "The exception is raised correctly");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
+
+=pod
+
+    case bvd-get.3.1.3.2 :
+	bvd-get raises an exception when the specified 'buildver' option is supported but not-existing while trying to generate output in the avdb format.
+
+=cut
+
+sub case_bvd_get_3_1_3_2_1 {
+
+    subtest "case bvd-get.3.1.3.2.1 - bvd-get raises an exception when the specified 'buildver' option is supported but not-existing while trying to generate output in the avdb format (trying to access hg19 when only has hg18)" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.1.3.2.1"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.1.3.2.1";
+
+	$source_bvdb   = "$absolute_test_data_dir/3.1.3.2.1_bvdb";
+	$source_chksum = "$absolute_test_data_dir/3.1.3.2.1_bvdb_chksum"; 
+
+	$target_bvdb   = "$absolute_test_DB_dir/bvdb_hg18";
+	$target_chksum = "$absolute_test_DB_dir/bvdb_hg18_chksum";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	mkpath $absolute_test_DB_dir;
+	copy($source_bvdb, $target_bvdb) or die "Cannot copy $source_bvdb to $target_bvdb\n";
+	copy($source_chksum, $target_chksum) or die "Cannot copy $source_chksum to $target_chksum\n";
+
+	@test_args = ();
+	push @test_args, "--database";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer,lung_cancer";
+	push @test_args, "--avdb";
+	exec_bvd_get(options => \@test_args, error_file => "$absolute_test_DB_dir/bvd_get_error");
+	`/bin/grep "^ERROR" $absolute_test_DB_dir/bvd_get_error > $absolute_test_DB_dir/got_error`;
+        compare_file(got => "$absolute_test_DB_dir/got_error", expected => "$absolute_test_data_dir/expected_error", test_description => "The exception is raised correctly");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
+
+sub case_bvd_get_3_1_3_2_2 {
+
+    subtest "case bvd-get.3.1.3.2.2 - bvd-get raises an exception when the specified 'buildver' option is supported but not-existing while trying to generate output in the avdb format (trying to access hg18 when only has hg19)" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.1.3.2.2"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.1.3.2.2";
+
+	$source_bvdb   = "$absolute_test_data_dir/3.1.3.2.2_bvdb";
+	$source_chksum = "$absolute_test_data_dir/3.1.3.2.2_bvdb_chksum"; 
+
+	$target_bvdb   = "$absolute_test_DB_dir/bvdb";
+	$target_chksum = "$absolute_test_DB_dir/bvdb_chksum";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	mkpath $absolute_test_DB_dir;
+	copy($source_bvdb, $target_bvdb) or die "Cannot copy $source_bvdb to $target_bvdb\n";
+	copy($source_chksum, $target_chksum) or die "Cannot copy $source_chksum to $target_chksum\n";
+
+	@test_args = ();
+	push @test_args, "--database";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "--buildver";
+	push @test_args, "hg18";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer,lung_cancer";
+	push @test_args, "--avdb";
+	exec_bvd_get(options => \@test_args, error_file => "$absolute_test_DB_dir/bvd_get_error");
+	`/bin/grep "^ERROR" $absolute_test_DB_dir/bvd_get_error > $absolute_test_DB_dir/got_error`;
+        compare_file(got => "$absolute_test_DB_dir/got_error", expected => "$absolute_test_data_dir/expected_error", test_description => "The exception is raised correctly");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
 
 =head1 CASES subgroup bvd-get.3.2.x.x
 
@@ -968,13 +1144,13 @@ The purpose of the cases in this group is to check if bvd-get can generate the c
 The purpose of the cases in this group is to check if bvd-get can handle invalid 'buildver' option
 
     case bvd-get.3.2.3.1 :
-	bvd-get raises an exception when the specified 'buildver' option is not supported by bvd-get while trying to generate output in VCF format.
+	bvd-get raises an exception when the specified 'buildver' option is not supported by bvd-get while trying to generate output in the VCF format.
 
 =cut
 
 sub case_bvd_get_3_2_3_1_1 {
 
-    subtest "case bvd-get.3.2.3.1.1 - bvd-get raises an exception when the specified 'buildver' option is not supported by bvd-get while trying to generate output in VCF format" => sub {
+    subtest "case bvd-get.3.2.3.1.1 - bvd-get raises an exception when the specified 'buildver' option is not supported by bvd-get while trying to generate output in the VCF format" => sub {
 
 	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.2.3.1.1"));
 	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.2.3.1.1";
@@ -1010,19 +1186,52 @@ sub case_bvd_get_3_2_3_1_1 {
 =pod
 
     case bvd-get.3.2.3.2 :
-	bvd-get raises an exception when the specified 'buildver' option is supported but not-existing while trying to generate output in VCF format.
+	bvd-get raises an exception when the specified 'buildver' option is supported but not-existing while trying to generate output in the VCF format.
 
 =cut
 
 sub case_bvd_get_3_2_3_2_1 {
 
-    subtest "case bvd-get.3.2.3.2.1 - bvd-get raises an exception when the specified 'buildver' option is supported but not-existing while trying to generate output in VCF format" => sub {
+    subtest "case bvd-get.3.2.3.2.1 - bvd-get raises an exception when the specified 'buildver' option is supported but not-existing while trying to generate output in the VCF format (trying to access hg19 when only has hg18)" => sub {
 
 	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.2.3.2.1"));
 	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.2.3.2.1";
 
 	$source_bvdb   = "$absolute_test_data_dir/3.2.3.2.1_bvdb";
 	$source_chksum = "$absolute_test_data_dir/3.2.3.2.1_bvdb_chksum"; 
+
+	$target_bvdb   = "$absolute_test_DB_dir/bvdb_hg18";
+	$target_chksum = "$absolute_test_DB_dir/bvdb_hg18_chksum";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	mkpath $absolute_test_DB_dir;
+	copy($source_bvdb, $target_bvdb) or die "Cannot copy $source_bvdb to $target_bvdb\n";
+	copy($source_chksum, $target_chksum) or die "Cannot copy $source_chksum to $target_chksum\n";
+
+	@test_args = ();
+	push @test_args, "--database";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer,lung_cancer";
+	push @test_args, "--vcf";
+	exec_bvd_get(options => \@test_args, error_file => "$absolute_test_DB_dir/bvd_get_error");
+	`/bin/grep "^ERROR" $absolute_test_DB_dir/bvd_get_error > $absolute_test_DB_dir/got_error`;
+        compare_file(got => "$absolute_test_DB_dir/got_error", expected => "$absolute_test_data_dir/expected_error", test_description => "The exception is raised correctly");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
+
+sub case_bvd_get_3_2_3_2_2 {
+
+    subtest "case bvd-get.3.2.3.2.2 - bvd-get raises an exception when the specified 'buildver' option is supported but not-existing while trying to generate output in the VCF format (trying to access hg18 when only has hg19)" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.2.3.2.2"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.2.3.2.2";
+
+	$source_bvdb   = "$absolute_test_data_dir/3.2.3.2.2_bvdb";
+	$source_chksum = "$absolute_test_data_dir/3.2.3.2.2_bvdb_chksum"; 
 
 	$target_bvdb   = "$absolute_test_DB_dir/bvdb";
 	$target_chksum = "$absolute_test_DB_dir/bvdb_chksum";
@@ -1041,9 +1250,9 @@ sub case_bvd_get_3_2_3_2_1 {
 	push @test_args, "lung_cancer,lung_cancer";
 	push @test_args, "--vcf";
 	exec_bvd_get(options => \@test_args, error_file => "$absolute_test_DB_dir/bvd_get_error");
-	`/bin/grep "ERROR" $absolute_test_DB_dir/bvd_get_error > $absolute_test_DB_dir/got_error`;
+	`/bin/grep "^ERROR" $absolute_test_DB_dir/bvd_get_error > $absolute_test_DB_dir/got_error`;
         compare_file(got => "$absolute_test_DB_dir/got_error", expected => "$absolute_test_data_dir/expected_error", test_description => "The exception is raised correctly");
-	#clear_db(db_dir => $absolute_test_DB_dir);
+	clear_db(db_dir => $absolute_test_DB_dir);
 
 	done_testing();
     };
@@ -1068,12 +1277,78 @@ The purpose of the cases in this group is to check if bvd-get can generate the c
 
 =cut
 
+sub case_bvd_get_3_3_1_1_1 {
+
+    subtest "case bvd-get.3.3.1.1.1 - bvd-get can generate the correct output in the default format, avdb, using option '--buildver hg18'" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.3.1.1.1"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.3.1.1.1";
+
+	$source_bvdb   = "$absolute_test_data_dir/3.3.1.1.1_bvdb";
+	$source_chksum = "$absolute_test_data_dir/3.3.1.1.1_bvdb_chksum"; 
+
+	$target_bvdb   = "$absolute_test_DB_dir/bvdb_hg18";
+	$target_chksum = "$absolute_test_DB_dir/bvdb_hg18_chksum";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	mkpath $absolute_test_DB_dir;
+	copy($source_bvdb, $target_bvdb) or die "Cannot copy $source_bvdb to $target_bvdb\n";
+	copy($source_chksum, $target_chksum) or die "Cannot copy $source_chksum to $target_chksum\n";
+
+	@test_args = ();
+	push @test_args, "--database";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "--buildver";
+	push @test_args, "hg18";
+	push @test_args, "-T";
+	push @test_args, "prostate_cancer";
+	exec_bvd_get(options => \@test_args, output_file => "$absolute_test_DB_dir/bvd_get_out");
+        compare_file(got => "$absolute_test_DB_dir/bvd_get_out", expected => "$absolute_test_data_dir/expected_result", test_description => "The avdb output is correct");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
+
 =pod
 
     case bvd-get.3.3.1.2 :
 	bvd-get can generate the correct output in the default format, avdb, from the buildver hg19.
 
 =cut
+
+sub case_bvd_get_3_3_1_2_1 {
+
+    subtest "case bvd-get.3.3.1.2.1 - bvd-get can generate the correct output in the default format, avdb, using option '--buildver hg19'" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.3.1.2.1"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.3.1.2.1";
+
+	$source_bvdb   = "$absolute_test_data_dir/3.3.1.2.1_bvdb";
+	$source_chksum = "$absolute_test_data_dir/3.3.1.2.1_bvdb_chksum"; 
+
+	$target_bvdb   = "$absolute_test_DB_dir/bvdb";
+	$target_chksum = "$absolute_test_DB_dir/bvdb_chksum";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	mkpath $absolute_test_DB_dir;
+	copy($source_bvdb, $target_bvdb) or die "Cannot copy $source_bvdb to $target_bvdb\n";
+	copy($source_chksum, $target_chksum) or die "Cannot copy $source_chksum to $target_chksum\n";
+
+	@test_args = ();
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "--buildver";
+	push @test_args, "hg19";
+	push @test_args, "-T";
+	push @test_args, "colon_cancer";
+	exec_bvd_get(options => \@test_args, output_file => "$absolute_test_DB_dir/bvd_get_out");
+        compare_file(got => "$absolute_test_DB_dir/bvd_get_out", expected => "$absolute_test_data_dir/expected_result", test_description => "The avdb output is correct");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
 
 =head2 cases subgroup bvd-get.3.3.2.x
 
@@ -1087,10 +1362,118 @@ The purpose of the cases in this group is to check if bvd-get can generate the c
 
 The purpose of the cases in this group is to check if bvd-get can handle invalid 'buildver' option
 
+
     case bvd-get.3.3.3.1 :
-	bvd-get raises an exception when the invalid 'buildver' option is presented.
+	bvd-get raises an exception when the specified 'buildver' option is not supported by bvd-get while trying to generate output in the default format, 'avdb'.
 
 =cut
+
+sub case_bvd_get_3_3_3_1_1 {
+
+    subtest "case bvd-get.3.1.3.1.1 - bvd-get raises an exception when the specified 'buildver' option is not supported by bvd-get while trying to generate output in the default format, 'avdb'" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.3.3.1.1"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.3.3.1.1";
+
+	$source_bvdb   = "$absolute_test_data_dir/3.3.3.1.1_bvdb";
+	$source_chksum = "$absolute_test_data_dir/3.3.3.1.1_bvdb_chksum"; 
+
+	$target_bvdb   = "$absolute_test_DB_dir/bvdb";
+	$target_chksum = "$absolute_test_DB_dir/bvdb_chksum";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	mkpath $absolute_test_DB_dir;
+	copy($source_bvdb, $target_bvdb) or die "Cannot copy $source_bvdb to $target_bvdb\n";
+	copy($source_chksum, $target_chksum) or die "Cannot copy $source_chksum to $target_chksum\n";
+
+	@test_args = ();
+	push @test_args, "--database";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "--buildver";
+	push @test_args, "hg17";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer,lung_cancer";
+	exec_bvd_get(options => \@test_args, error_file => "$absolute_test_DB_dir/bvd_get_error");
+	`/bin/grep "ERROR" $absolute_test_DB_dir/bvd_get_error > $absolute_test_DB_dir/got_error`;
+        compare_file(got => "$absolute_test_DB_dir/got_error", expected => "$absolute_test_data_dir/expected_error", test_description => "The exception is raised correctly");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
+
+=pod
+
+    case bvd-get.3.3.3.2 :
+	bvd-get raises an exception when the specified 'buildver' option is supported but not-existing while trying to generate output in the default format, 'avdb'.
+
+=cut
+
+sub case_bvd_get_3_3_3_2_1 {
+
+    subtest "case bvd-get.3.3.3.2.1 - bvd-get raises an exception when the specified 'buildver' option is supported but not-existing while trying to generate output in the default format, 'avdb' (trying to access hg19 when only has hg18)" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.3.3.2.1"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.3.3.2.1";
+
+	$source_bvdb   = "$absolute_test_data_dir/3.3.3.2.1_bvdb";
+	$source_chksum = "$absolute_test_data_dir/3.3.3.2.1_bvdb_chksum"; 
+
+	$target_bvdb   = "$absolute_test_DB_dir/bvdb_hg18";
+	$target_chksum = "$absolute_test_DB_dir/bvdb_hg18_chksum";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	mkpath $absolute_test_DB_dir;
+	copy($source_bvdb, $target_bvdb) or die "Cannot copy $source_bvdb to $target_bvdb\n";
+	copy($source_chksum, $target_chksum) or die "Cannot copy $source_chksum to $target_chksum\n";
+
+	@test_args = ();
+	push @test_args, "--database";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer,lung_cancer";
+	exec_bvd_get(options => \@test_args, error_file => "$absolute_test_DB_dir/bvd_get_error");
+	`/bin/grep "^ERROR" $absolute_test_DB_dir/bvd_get_error > $absolute_test_DB_dir/got_error`;
+        compare_file(got => "$absolute_test_DB_dir/got_error", expected => "$absolute_test_data_dir/expected_error", test_description => "The exception is raised correctly");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
+
+sub case_bvd_get_3_3_3_2_2 {
+
+    subtest "case bvd-get.3.3.3.2.2 - bvd-get raises an exception when the specified 'buildver' option is supported but not-existing while trying to generate output in the default format, 'avdb' (trying to access hg18 when only has hg19)" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.3.3.2.2"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.3.3.2.2";
+
+	$source_bvdb   = "$absolute_test_data_dir/3.3.3.2.2_bvdb";
+	$source_chksum = "$absolute_test_data_dir/3.3.3.2.2_bvdb_chksum"; 
+
+	$target_bvdb   = "$absolute_test_DB_dir/bvdb";
+	$target_chksum = "$absolute_test_DB_dir/bvdb_chksum";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	mkpath $absolute_test_DB_dir;
+	copy($source_bvdb, $target_bvdb) or die "Cannot copy $source_bvdb to $target_bvdb\n";
+	copy($source_chksum, $target_chksum) or die "Cannot copy $source_chksum to $target_chksum\n";
+
+	@test_args = ();
+	push @test_args, "--database";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "--buildver";
+	push @test_args, "hg18";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer,lung_cancer";
+	exec_bvd_get(options => \@test_args, error_file => "$absolute_test_DB_dir/bvd_get_error");
+	`/bin/grep "^ERROR" $absolute_test_DB_dir/bvd_get_error > $absolute_test_DB_dir/got_error`;
+        compare_file(got => "$absolute_test_DB_dir/got_error", expected => "$absolute_test_data_dir/expected_error", test_description => "The exception is raised correctly");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
 
 #case_bvd_get_1_1_2_1_1();
 #case_bvd_get_1_1_2_2_1();
@@ -1101,7 +1484,12 @@ The purpose of the cases in this group is to check if bvd-get can handle invalid
 #case_bvd_get_2_1_1_2_1();
 #case_bvd_get_2_1_2_1_1();
 #case_bvd_get_2_1_2_2_1();
-case_bvd_get_3_1_1_1_1();
+#case_bvd_get_3_1_1_1_1();
+#case_bvd_get_3_1_1_2_1();
+#case_bvd_get_3_1_2_1_1();
+#case_bvd_get_3_1_3_1_1();
+#case_bvd_get_3_1_3_2_1();
+#case_bvd_get_3_1_3_2_2();
 #case_bvd_get_3_2_1_1_1();
 #case_bvd_get_3_2_1_1_2();
 #case_bvd_get_3_2_1_1_3();
@@ -1109,9 +1497,14 @@ case_bvd_get_3_1_1_1_1();
 #case_bvd_get_3_2_1_2_2();
 #case_bvd_get_3_2_1_2_3();
 #case_bvd_get_3_2_3_1_1();
-#case_bvd_get_3_2_3_1_1();
-
 #case_bvd_get_3_2_3_2_1();
+#case_bvd_get_3_2_3_2_2();
+#case_bvd_get_3_3_1_1_1();
+#case_bvd_get_3_3_1_2_1();
+#case_bvd_get_3_3_3_1_1();
+#case_bvd_get_3_3_3_2_1();
+#case_bvd_get_3_3_3_2_2();
+
 
 sub dont_forget {
     my ($msg) = @_;
@@ -1121,17 +1514,10 @@ sub dont_forget {
 TODO: {
     local $TODO = "Here you go";
 
-    dont_forget("case 3.1.1.1.1");
-#    dont_forget("case 3.1.1.2.1");
-#    dont_forget("case 3.1.2.1.1");
-#    dont_forget("case 3.1.3.1.1");
-#    dont_forget("case 3.3.1.1.1");
-#    dont_forget("case 3.3.1.2.1");
-#    dont_forget("case 3.3.3.1.1");
 
-    dont_forget("Fix bug from case 1.1.3.1.1, it should raise an exception instead because it's probably a typo");
-    dont_forget("Fix bug from case 3.2.3.2.1");
+    dont_forget("Fix bug from case 1.1.3.3.1, it should raise an exception instead because it's probably a typo");
     dont_forget("test if tags can have '-' character");
+    dont_forget("test plain bvd-get with no database then raise 'perhaps you need to run bvd-add first, you point to the wrong database, you use invalid buildver' (test this in dev environment)");
 #    dont_forget("migrate script from the past");
 
 }

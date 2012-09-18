@@ -87,13 +87,17 @@ sub bvd_get
 sub output_avdb
 {
     #Connect to DB
-    my $bvdb = Bvdb->new(db_dir=>$$opts{database});
+    my $bvdb = Bvdb->new(db_dir=>$$opts{database}, buildver=>$$opts{buildver});
     $bvdb->load_header();
+    if (! defined($$bvdb{db_fh})) {
+        error("ERROR: Database not found !!!!!. This may be caused by wrong database location or wrong build version. Run -? for help.\n");
+    } 
+
     while (my $variant = $bvdb->next_data_hash($$opts{tags})) {
-        if ($variant->{fq}) {
-            my $len = $variant->{POS}+length($variant->{REF})-1;
-            print "$variant->{CHROM} $variant->{POS} $len $variant->{REF} $variant->{ALT} $variant->{fq}\n";
-        }
+	if ($variant->{fq}) {
+	    my $len = $variant->{POS}+length($variant->{REF})-1;
+	    print "$variant->{CHROM} $variant->{POS} $len $variant->{REF} $variant->{ALT} $variant->{fq}\n";
+	}
     }
     $bvdb->close();
 }
@@ -104,6 +108,10 @@ sub output_vcf
     my $bvdb = Bvdb->new(db_dir=>$$opts{database}, buildver=>$$opts{buildver});
     $bvdb->load_header();
 
+    if (! defined($$bvdb{db_fh})) {
+        error("ERROR: Database not found !!!!!. This may be caused by wrong database location or wrong build version. Run -? for help.\n");
+    } 
+    
     #Create VCF output
     my $vcf_out = Vcf->new();
 
@@ -111,35 +119,35 @@ sub output_vcf
     $vcf_out->add_columns(@cols);
 
     foreach my $key (sort keys $$bvdb{header}->{contig}) {
-        $vcf_out->add_header_line({key=>'contig',ID=>$key,length=>$$bvdb{header}->{contig}->{$key}});
+	$vcf_out->add_header_line({key=>'contig',ID=>$key,length=>$$bvdb{header}->{contig}->{$key}});
     }
-    
+
     if ($$bvdb{header}->{reference}) {
-        $vcf_out->add_header_line({key=>'reference',value=>$$bvdb{header}->{reference}});
+	$vcf_out->add_header_line({key=>'reference',value=>$$bvdb{header}->{reference}});
     } 
     print $vcf_out->format_header();
 
     while (my $variant = $bvdb->next_data_hash($$opts{tags})) {
-        if ($variant->{fq}) {
-            my %out;
-            my %info;
+	if ($variant->{fq}) {
+	    my %out;
+	    my %info;
 
-            my $len = $variant->{POS}+length($variant->{REF})-1;
-            $out{CHROM} = $variant->{CHROM};
-            $out{POS}   = $variant->{POS};
-            $out{ID}    = '.';
-            $out{REF}   = $variant->{REF};
-            $out{QUAL}  = '.';
-            #$out{ALT}   = [];
-            push @{$out{ALT}}, $variant->{ALT};
-            # push @{$out{ALT}}, 'Z';
-            $info{BVDMAF} = $variant->{fq};
-            $out{INFO} = { %info }; 
-            #$out{FORMAT} = [];
-            print $vcf_out->format_line(\%out);
-            # print $variant->{record_ref}, "\n";
-            # print "$variant->{CHROM} $variant->{POS} $len $variant->{REF} $variant->{ALT} $variant->{fq}\n";
-        }
+	    my $len = $variant->{POS}+length($variant->{REF})-1;
+	    $out{CHROM} = $variant->{CHROM};
+	    $out{POS}   = $variant->{POS};
+	    $out{ID}    = '.';
+	    $out{REF}   = $variant->{REF};
+	    $out{QUAL}  = '.';
+	    #$out{ALT}   = [];
+	    push @{$out{ALT}}, $variant->{ALT};
+	    # push @{$out{ALT}}, 'Z';
+	    $info{BVDMAF} = $variant->{fq};
+	    $out{INFO} = { %info }; 
+	    #$out{FORMAT} = [];
+	    print $vcf_out->format_line(\%out);
+	# print $variant->{record_ref}, "\n";
+	# print "$variant->{CHROM} $variant->{POS} $len $variant->{REF} $variant->{ALT} $variant->{fq}\n";
+	}
     }
     $bvdb->close();
 }
