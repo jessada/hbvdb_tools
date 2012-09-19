@@ -1475,35 +1475,35 @@ sub case_bvd_get_3_3_3_2_2 {
     };
 }
 
-#case_bvd_get_1_1_2_1_1();
-#case_bvd_get_1_1_2_2_1();
-#case_bvd_get_1_1_3_1_1();
-#case_bvd_get_1_1_3_2_1();
+case_bvd_get_1_1_2_1_1();
+case_bvd_get_1_1_2_2_1();
+case_bvd_get_1_1_3_1_1();
+case_bvd_get_1_1_3_2_1();
 #case_bvd_get_1_1_3_3_1();
-#case_bvd_get_2_1_1_1_1();
-#case_bvd_get_2_1_1_2_1();
-#case_bvd_get_2_1_2_1_1();
-#case_bvd_get_2_1_2_2_1();
-#case_bvd_get_3_1_1_1_1();
-#case_bvd_get_3_1_1_2_1();
-#case_bvd_get_3_1_2_1_1();
-#case_bvd_get_3_1_3_1_1();
-#case_bvd_get_3_1_3_2_1();
-#case_bvd_get_3_1_3_2_2();
-#case_bvd_get_3_2_1_1_1();
-#case_bvd_get_3_2_1_1_2();
-#case_bvd_get_3_2_1_1_3();
-#case_bvd_get_3_2_1_2_1();
-#case_bvd_get_3_2_1_2_2();
-#case_bvd_get_3_2_1_2_3();
-#case_bvd_get_3_2_3_1_1();
-#case_bvd_get_3_2_3_2_1();
-#case_bvd_get_3_2_3_2_2();
-#case_bvd_get_3_3_1_1_1();
-#case_bvd_get_3_3_1_2_1();
-#case_bvd_get_3_3_3_1_1();
-#case_bvd_get_3_3_3_2_1();
-#case_bvd_get_3_3_3_2_2();
+case_bvd_get_2_1_1_1_1();
+case_bvd_get_2_1_1_2_1();
+case_bvd_get_2_1_2_1_1();
+case_bvd_get_2_1_2_2_1();
+case_bvd_get_3_1_1_1_1();
+case_bvd_get_3_1_1_2_1();
+case_bvd_get_3_1_2_1_1();
+case_bvd_get_3_1_3_1_1();
+case_bvd_get_3_1_3_2_1();
+case_bvd_get_3_1_3_2_2();
+case_bvd_get_3_2_1_1_1();
+case_bvd_get_3_2_1_1_2();
+case_bvd_get_3_2_1_1_3();
+case_bvd_get_3_2_1_2_1();
+case_bvd_get_3_2_1_2_2();
+case_bvd_get_3_2_1_2_3();
+case_bvd_get_3_2_3_1_1();
+case_bvd_get_3_2_3_2_1();
+case_bvd_get_3_2_3_2_2();
+case_bvd_get_3_3_1_1_1();
+case_bvd_get_3_3_1_2_1();
+case_bvd_get_3_3_3_1_1();
+case_bvd_get_3_3_3_2_1();
+case_bvd_get_3_3_3_2_2();
 
 
 sub dont_forget {
@@ -1516,6 +1516,7 @@ TODO: {
 
 
     dont_forget("Fix bug from case 1.1.3.3.1, it should raise an exception instead because it's probably a typo");
+    dont_forget("bvd-get should not create empty directory");
     dont_forget("test if tags can have '-' character");
     dont_forget("test plain bvd-get with no database then raise 'perhaps you need to run bvd-add first, you point to the wrong database, you use invalid buildver' (test this in dev environment)");
 #    dont_forget("migrate script from the past");

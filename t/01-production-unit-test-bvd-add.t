@@ -18,7 +18,7 @@ use File::Path qw(mkpath);
 use File::Copy;
 use Error qw(:try);
 
-use Bvdb_test qw(clear_db untaint get_absolute_db_dir compare_file compare_file_content compare_DB_header DB_header_exist);
+use Bvdb_test qw(clear_db untaint get_absolute_db_dir compare_file compare_file_content compare_file_header file_header_exist);
 
 my @test_args;
 my $absolute_bvd_add_path = untaint(dirname(abs_path($0))."/../bin/bvd-add.pl"); 
@@ -90,9 +90,9 @@ sub case_bvd_add_1_1_3_1_1 {
 	push @test_args, "$absolute_test_DB_dir";
 	push @test_args, "$absolute_test_data_dir/1.1.3.1.1_1.vcf";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -122,9 +122,9 @@ sub case_bvd_add_1_1_3_2_1 {
 	push @test_args, "-T";
 	push @test_args, "colon_cancer,lung_cancer";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -163,9 +163,9 @@ sub case_bvd_add_1_1_4_1_1 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -204,9 +204,9 @@ sub case_bvd_add_1_1_4_2_1 {
 	push @test_args, "-d";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -243,9 +243,9 @@ sub case_bvd_add_1_1_4_3_1 {
 	push @test_args, "$absolute_test_DB_dir";
 	push @test_args, "$absolute_test_data_dir/1.1.4.3.1_1.vcf";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -284,9 +284,9 @@ sub case_bvd_add_1_1_4_4_1 {
 	push @test_args, "--tags";
 	push @test_args, "lung_cancer";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -377,9 +377,9 @@ sub case_bvd_add_1_1_5_1_1 {
 	push @test_args, "--tags";
 	push @test_args, "colon_cancer,lung_cancer";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -454,9 +454,9 @@ sub case_bvd_add_1_1_5_2_1 {
 	push @test_args, "-d";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -488,9 +488,9 @@ sub case_bvd_add_1_1_6_1_1 {
 	push @test_args, "-T";
 	push @test_args, "colon_cancer,lung_cancer";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -534,9 +534,9 @@ sub case_bvd_add_1_1_7_2_1 {
 	my $chksum_backup_file = `/bin/ls $absolute_test_DB_dir/bvdb_chksum2* | /usr/bin/sort -r | /usr/bin/head -1`;
         chomp($DB_backup_file);
         chomp($chksum_backup_file);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file(got => "$DB_backup_file", expected => "$absolute_test_data_dir/expected_bvdb_backup", test_description => "database backup is correctly done");
 	compare_file(got => "$chksum_backup_file", expected => "$absolute_test_data_dir/expected_bvdb_chksum_backup", test_description => "chksum backup is correctly done");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -586,9 +586,9 @@ sub case_bvd_add_1_1_7_3_1 {
 	my $chksum_backup_file = `/bin/ls $absolute_test_DB_dir/bvdb_chksum2* | /usr/bin/sort -r | /usr/bin/head -1`;
         chomp($DB_backup_file);
         chomp($chksum_backup_file);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file(got => "$DB_backup_file", expected => "$absolute_test_data_dir/expected_bvdb_backup", test_description => "database backup is correctly done");
 	compare_file(got => "$chksum_backup_file", expected => "$absolute_test_data_dir/expected_bvdb_chksum_backup", test_description => "chksum backup is correctly done");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -638,9 +638,9 @@ sub case_bvd_add_1_1_7_4_1 {
 	my $chksum_backup_file = `/bin/ls $absolute_test_DB_dir/bvdb_chksum2* | /usr/bin/sort -r | /usr/bin/head -1`;
         chomp($DB_backup_file);
         chomp($chksum_backup_file);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file(got => "$DB_backup_file", expected => "$absolute_test_data_dir/expected_bvdb_backup", test_description => "database backup is correctly done");
 	compare_file(got => "$chksum_backup_file", expected => "$absolute_test_data_dir/expected_bvdb_chksum_backup", test_description => "chksum backup is correctly done");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -672,9 +672,9 @@ sub case_bvd_add_1_1_8_1_1 {
 	push @test_args, "$absolute_test_DB_dir";
 	push @test_args, "$absolute_test_data_dir/1.1.8.1.1_1.vcf";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -722,9 +722,9 @@ sub case_bvd_add_2_1_1_1_1 {
 	push @test_args, "$absolute_test_data_dir/2.1.1.1.1_1.vcf";
 	open(STDERR, ">$absolute_test_DB_dir/logfile");
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	compare_file(got => "$absolute_test_DB_dir/logfile", expected => "$absolute_test_data_dir/expected_warning", test_description => "the new REF is correctly counted");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -763,9 +763,9 @@ sub case_bvd_add_2_1_1_2_1 {
 	push @test_args, "$absolute_test_DB_dir";
 	open(STDERR, ">$absolute_test_DB_dir/logfile");
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	compare_file(got => "$absolute_test_DB_dir/logfile", expected => "$absolute_test_data_dir/expected_warning", test_description => "the new REF is correctly counted");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -804,9 +804,9 @@ sub case_bvd_add_2_1_1_3_1 {
 	push @test_args, "$absolute_test_DB_dir";
 	open(STDERR, ">$absolute_test_DB_dir/logfile");
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	compare_file(got => "$absolute_test_DB_dir/logfile", expected => "$absolute_test_data_dir/expected_warning", test_description => "the new REF is correctly counted");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -845,9 +845,9 @@ sub case_bvd_add_2_1_1_4_1 {
 	push @test_args, "$absolute_test_DB_dir";
 	open(STDERR, ">$absolute_test_DB_dir/logfile");
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	compare_file(got => "$absolute_test_DB_dir/logfile", expected => "$absolute_test_data_dir/expected_warning", test_description => "the new REF is correctly counted");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -886,9 +886,9 @@ sub case_bvd_add_2_1_1_5_1 {
 	push @test_args, "$absolute_test_DB_dir";
 	open(STDERR, ">$absolute_test_DB_dir/logfile");
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	compare_file(got => "$absolute_test_DB_dir/logfile", expected => "$absolute_test_data_dir/expected_warning", test_description => "the new REF is correctly counted");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -927,9 +927,9 @@ sub case_bvd_add_2_1_1_6_1 {
 	push @test_args, "$absolute_test_DB_dir";
 	open(STDERR, ">$absolute_test_DB_dir/logfile");
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	compare_file(got => "$absolute_test_DB_dir/logfile", expected => "$absolute_test_data_dir/expected_warning", test_description => "the new REFs are correctly counted");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -968,9 +968,9 @@ sub case_bvd_add_2_1_1_7_1 {
 	push @test_args, "$absolute_test_DB_dir";
 	open(STDERR, ">$absolute_test_DB_dir/logfile");
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	compare_file(got => "$absolute_test_DB_dir/logfile", expected => "$absolute_test_data_dir/expected_warning", test_description => "the new REFs are correctly counted");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -1002,9 +1002,9 @@ sub case_bvd_add_2_1_1_7_2 {
 	push @test_args, "$absolute_test_DB_dir";
 	open(STDERR, ">$absolute_test_DB_dir/logfile");
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	compare_file(got => "$absolute_test_DB_dir/logfile", expected => "$absolute_test_data_dir/expected_warning", test_description => "the new REFs are correctly counted");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -1043,9 +1043,9 @@ sub case_bvd_add_2_1_1_8_1 {
 	push @test_args, "$absolute_test_DB_dir";
 	open(STDERR, ">$absolute_test_DB_dir/logfile");
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	compare_file(got => "$absolute_test_DB_dir/logfile", expected => "$absolute_test_data_dir/expected_warning", test_description => "the new REFs are correctly counted");
 	clear_db(db_dir => $absolute_test_DB_dir);
@@ -1086,11 +1086,11 @@ sub case_bvd_add_3_1_1_1_1 {
 	push @test_args, "-T";
 	push @test_args, "colon_cancer,lung_cancer";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correctly not found");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correctly not found");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1120,11 +1120,11 @@ sub case_bvd_add_3_1_1_2_1 {
 	push @test_args, "-T";
 	push @test_args, "colon_cancer,lung_cancer";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1154,11 +1154,11 @@ sub case_bvd_add_3_1_1_3_1 {
 	push @test_args, "-T";
 	push @test_args, "colon_cancer,lung_cancer";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correctly not found");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correctly not found");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1197,11 +1197,11 @@ sub case_bvd_add_3_1_2_1_1 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1238,11 +1238,11 @@ sub case_bvd_add_3_1_2_2_1 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correctly not found");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correctly not found");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1279,11 +1279,11 @@ sub case_bvd_add_3_1_2_3_1 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1322,11 +1322,11 @@ sub case_bvd_add_3_1_3_1_1 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1363,11 +1363,11 @@ sub case_bvd_add_3_1_3_2_1 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1404,11 +1404,11 @@ sub case_bvd_add_3_1_3_3_1 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "REFERENCE", test_description => "REFERENCE is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "CONTIG", test_description => "CONTIG table is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1458,9 +1458,9 @@ sub case_bvd_add_4_1_1_1_1 {
 	push @test_args, "-T";
 	push @test_args, "colon_cancer,lung_cancer";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1492,9 +1492,9 @@ sub case_bvd_add_4_1_1_1_2 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1526,9 +1526,9 @@ sub case_bvd_add_4_1_1_1_3 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1560,9 +1560,9 @@ sub case_bvd_add_4_1_1_1_4 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb_hg18", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1594,11 +1594,11 @@ sub case_bvd_add_4_1_1_2_1 {
 	push @test_args, "-T";
 	push @test_args, "colon_cancer,lung_cancer";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
-	clear_db(db_dir => $absolute_test_DB_dir);
+	#clear_db(db_dir => $absolute_test_DB_dir);
 
 	done_testing();
     };
@@ -1628,9 +1628,9 @@ sub case_bvd_add_4_1_1_2_2 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1662,9 +1662,9 @@ sub case_bvd_add_4_1_1_2_3 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 
@@ -1696,9 +1696,9 @@ sub case_bvd_add_4_1_1_2_4 {
 	push @test_args, "--database";
 	push @test_args, "$absolute_test_DB_dir";
 	system($absolute_perl_path, $absolute_bvd_add_path, @test_args);
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
-	compare_DB_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "NI", test_description => "NI header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "ENTRIES", test_description => "ENTRIES header is correct");
+	compare_file_header(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", header => "TAGS", test_description => "TAGS header is correct");
 	compare_file_content(got => "$absolute_test_DB_dir/bvdb", expected => "$absolute_test_data_dir/expected_result", test_description => "file content is correct");
 	clear_db(db_dir => $absolute_test_DB_dir);
 

@@ -71,7 +71,7 @@ sub bvd_get
 {
     my ($opts) = @_;
 	
-    validate_tags();
+    organize_tags();
 
     if ( $$opts{output_format} eq AVDB_FORMAT  ) {
         output_avdb();
@@ -93,6 +93,12 @@ sub output_avdb
         error("ERROR: Database not found !!!!!. This may be caused by wrong database location or wrong build version. Run -? for help.\n");
     } 
 
+    my $ret = check_invalid_input_tags(input_tags=> $$opts{tags}, db_tags => \@{$$bvdb{header}->{tags}});
+    if ($ret) {
+        error("ERROR: tag '$ret' is not in the database. Is it a typo?. Run -? for help.\n");
+    } 
+
+    #Generate avdb output
     while (my $variant = $bvdb->next_data_hash($$opts{tags})) {
 	if ($variant->{fq}) {
 	    my $len = $variant->{POS}+length($variant->{REF})-1;
@@ -112,7 +118,12 @@ sub output_vcf
         error("ERROR: Database not found !!!!!. This may be caused by wrong database location or wrong build version. Run -? for help.\n");
     } 
     
-    #Create VCF output
+    my $ret = check_invalid_input_tags(input_tags=> $$opts{tags}, db_tags => \@{$$bvdb{header}->{tags}});
+    if ($ret) {
+        error("ERROR: tag '$ret' is not in the database. Is it a typo?. Run -? for help.\n");
+    } 
+
+    #Generate VCF output
     my $vcf_out = Vcf->new();
 
     my @cols;
@@ -138,25 +149,43 @@ sub output_vcf
 	    $out{ID}    = '.';
 	    $out{REF}   = $variant->{REF};
 	    $out{QUAL}  = '.';
-	    #$out{ALT}   = [];
 	    push @{$out{ALT}}, $variant->{ALT};
-	    # push @{$out{ALT}}, 'Z';
 	    $info{BVDMAF} = $variant->{fq};
 	    $out{INFO} = { %info }; 
-	    #$out{FORMAT} = [];
 	    print $vcf_out->format_line(\%out);
-	# print $variant->{record_ref}, "\n";
-	# print "$variant->{CHROM} $variant->{POS} $len $variant->{REF} $variant->{ALT} $variant->{fq}\n";
 	}
     }
     $bvdb->close();
 }
 
-sub validate_tags
+sub check_invalid_input_tags
 {
-	#Assuming that tags value is stored in $$opts{tags}
-	my @array = split(/,/, $$opts{tags});
-	my %seen = ();
-	my @unique = grep { ! $seen{ $_ }++ } @array;
-	$$opts{tags} = join(',', sort @unique);
+    my (%args) = @_;
+
+    my $invalid_tag;
+    my @input_tag_array = split(/,/, $args{input_tags});
+
+    foreach my $input_tag (@input_tag_array) {
+	my $valid = 0;
+	foreach my $db_tag (@{$args{db_tags}}) {
+	    if ($db_tag eq $input_tag) {
+		$valid = 1;
+		last;
+	    }
+	}
+	if ( ! $valid) {
+	    return $input_tag;
+	}
+    }
+    return;
 }
+
+sub organize_tags
+{
+    #Assuming that tags value is stored in $$opts{tags}
+    my @array = split(/,/, $$opts{tags});
+    my %seen = ();
+    my @unique = grep { ! $seen{ $_ }++ } @array;
+    $$opts{tags} = join(',', sort @unique);
+}
+
