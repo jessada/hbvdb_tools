@@ -138,7 +138,7 @@ sub output_vcf
     print $vcf_out->format_header();
 
     while (my $variant = $bvdb->next_data_hash($$opts{tags})) {
-	if ($variant->{fq}) {
+	if (($variant->{fq}) && ($variant->{fq} != 0)) {
 	    my %out;
 	    my %info;
 
