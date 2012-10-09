@@ -1809,6 +1809,9 @@ TODO: {
     dont_forget("handle pipe input");
     dont_forget("handle process substitution");
     dont_forget("handle wild card input?");
+    dont_forget("to handle/test incompatible issue & grep sort awk location");
+    dont_forget("to modify installation package");
+    dont_forget("to revise code in set reference/contig");
 
 }
 

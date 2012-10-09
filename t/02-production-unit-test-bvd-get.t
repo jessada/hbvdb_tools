@@ -889,6 +889,132 @@ sub case_bvd_get_3_1_3_2_2 {
     };
 }
 
+=head2 cases subgroup bvd-get.3.1.4.x
+
+The purpose of the cases in this group is to check if bvd-get can produce frequencies in avdb format with a reasonable number of significant digits (4)
+
+    case bvd-get.3.1.4.1 :
+	bvd-get produce frequencies in avdb format with correct digits when there are variants from 7 individuals in the database
+
+=cut
+
+sub case_bvd_get_3_1_4_1_1 {
+
+    subtest "case bvd-get.3.1.4.1.1 - bvd-get produce frequencies in avdb format with correct digits when there are variants from 7 individuals in the database" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.1.4.1.1"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.1.4.1.1";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.1.4.1.1_1.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "colon_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.1.4.1.1_2.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.1.4.1.1_3.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "prostate_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.1.4.1.1_4.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "colon_cancer,lung_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.1.4.1.1_5.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "colon_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.1.4.1.1_6.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.1.4.1.1_7.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "colon_cancer";
+	exec_bvd_add(options => \@test_args);
+
+	@test_args = ();
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	exec_bvd_get(options => \@test_args, output_file => "$absolute_test_DB_dir/bvd_get_out");
+	compare_file(got => "$absolute_test_DB_dir/bvd_get_out", expected => "$absolute_test_data_dir/expected_result", test_description => "avdb output is correct");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
+
+=pod
+
+    case bvd-get.3.1.4.2.1 :
+	bvd-get produce frequencies in avdb format with correct digits when there are variants from 3 individuals in the database
+
+=cut
+
+sub case_bvd_get_3_1_4_2_1 {
+
+    subtest "case bvd-get.3.1.4.2.1 - bvd-get produce frequencies in avdb format with correct digits when there are variants from 3 individuals in the database" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.1.4.2.1"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.1.4.2.1";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.1.4.2.1_1.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "colon_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.1.4.2.1_2.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.1.4.2.1_3.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "prostate_cancer";
+	exec_bvd_add(options => \@test_args);
+
+	@test_args = ();
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	exec_bvd_get(options => \@test_args, output_file => "$absolute_test_DB_dir/bvd_get_out");
+	compare_file(got => "$absolute_test_DB_dir/bvd_get_out", expected => "$absolute_test_data_dir/expected_result", test_description => "avdb output is correct");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
+
 =head1 CASES subgroup bvd-get.3.2.x.x
 
 >                                                                                                                         <
@@ -1258,6 +1384,86 @@ sub case_bvd_get_3_2_3_2_2 {
     };
 }
 
+
+=head2 cases subgroup bvd-get.3.2.4.x
+
+The purpose of the cases in this group is to check if bvd-get can produce frequencies in vcf format with a reasonable number of significant digits (4)
+
+    case bvd-get.3.2.4.1 :
+	bvd-get produce frequencies in vcf format with correct digits when there are variants from 7 individuals in the database
+
+=cut
+
+sub case_bvd_get_3_2_4_1_1 {
+
+    subtest "case bvd-get.3.2.4.1.1 - bvd-get produce frequencies in vcf format with correct digits when there are variants from 7 individuals in the database" => sub {
+
+	$absolute_test_DB_dir   = untaint(get_absolute_db_dir(db_dir => "__TEST_bvd_get.3.2.4.1.1"));
+	$absolute_test_data_dir = "$absolute_script_dir/test_data/bvd_get/3.2.4.1.1";
+
+	clear_db(db_dir => $absolute_test_DB_dir);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.2.4.1.1_1.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "colon_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.2.4.1.1_2.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.2.4.1.1_3.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "prostate_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.2.4.1.1_4.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "colon_cancer,lung_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.2.4.1.1_5.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "colon_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.2.4.1.1_6.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "lung_cancer";
+	exec_bvd_add(options => \@test_args);
+	@test_args = ();
+	push @test_args, "$absolute_test_data_dir/3.2.4.1.1_7.vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	push @test_args, "-T";
+	push @test_args, "colon_cancer";
+	exec_bvd_add(options => \@test_args);
+
+	@test_args = ();
+	push @test_args, "--vcf";
+	push @test_args, "-d";
+	push @test_args, "$absolute_test_DB_dir";
+	exec_bvd_get(options => \@test_args, output_file => "$absolute_test_DB_dir/bvd_get_out");
+	compare_file(got => "$absolute_test_DB_dir/bvd_get_out", expected => "$absolute_test_data_dir/expected_result", test_description => "vcf output is correct");
+	clear_db(db_dir => $absolute_test_DB_dir);
+
+	done_testing();
+    };
+}
+
 =head1 CASES subgroup bvd-get.3.3.x.x
 
 >                                                                                                                         <
@@ -1490,6 +1696,8 @@ case_bvd_get_3_1_2_1_1();
 case_bvd_get_3_1_3_1_1();
 case_bvd_get_3_1_3_2_1();
 case_bvd_get_3_1_3_2_2();
+case_bvd_get_3_1_4_1_1();
+case_bvd_get_3_1_4_2_1();
 case_bvd_get_3_2_1_1_1();
 case_bvd_get_3_2_1_1_2();
 case_bvd_get_3_2_1_1_3();
@@ -1499,6 +1707,7 @@ case_bvd_get_3_2_1_2_3();
 case_bvd_get_3_2_3_1_1();
 case_bvd_get_3_2_3_2_1();
 case_bvd_get_3_2_3_2_2();
+case_bvd_get_3_2_4_1_1();
 case_bvd_get_3_3_1_1_1();
 case_bvd_get_3_3_1_2_1();
 case_bvd_get_3_3_3_1_1();
@@ -1516,6 +1725,7 @@ TODO: {
 
 
     dont_forget("Fix bug from case 1.1.3.3.1, it should raise an exception instead because it's probably a typo");
+    dont_forget("test output format with real utility (ANNOVAR and GATK)");
     dont_forget("bvd-get should not create empty directory");
     dont_forget("test if tags can have '-' character");
     dont_forget("test plain bvd-get with no database then raise 'perhaps you need to run bvd-add first, you point to the wrong database, you use invalid buildver' (test this in dev environment)");

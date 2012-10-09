@@ -340,7 +340,7 @@ sub _init_tmp_db
     }
 
     #update contig table and reference
-    foreach my $key (sort keys $$self{contig_buffer}->{contig}) {
+    foreach my $key (sort keys %{$$self{contig_buffer}->{contig}}) {
         if ( ( ! $$self{header}->{contig}->{$key}) ||
              ($$self{contig_buffer}->{contig}->{$key} > $$self{header}->{contig}->{$key})
            ) {
@@ -357,7 +357,7 @@ sub _init_tmp_db
     } else {
         #If there is contig table
         if ($$self{header}->{contig} ) {
-            foreach my $key (sort keys $$self{header}->{contig}) {
+            foreach my $key (sort keys %{$$self{header}->{contig}}) {
                 print {$$self{_tmp_db_fh}} "##".HEADER_CONTIG."=<ID=".$key.",length=".$$self{header}->{contig}->{$key}.">\n";
             }
         } 
@@ -815,7 +815,7 @@ sub next_data_hash
             }#end foreach my $db_tag (@db_tag_array)
         }#end foreach $db_tags (@db_tags_array)
     }#end if ( @excluded_tags)
-    $record->{fq} /= ($$self{header}->{total_samples}*2);
+    $record->{fq} = sprintf("%.4f", $record->{fq}/($$self{header}->{total_samples}*2));
     $$self{last_line} = $record;
     return $record;
 }
