@@ -1,0 +1,9 @@
+##NI=3
+##ENTRIES=case_bvd_add_47_1.vcf,case_bvd_add_47_2.vcf,case_bvd_add_47_3.vcf
+##TAGS=
+##DB_ID=d4bed912c2631341231248
+X	10180880	G	GAC	3	.
+X	10180880	G	GACAC	3	.
+X	10180880	GAC	CAC	4	.
+X	10180880	GAC	G	4	.
+X	10180880	GAC	GACAC	4	.

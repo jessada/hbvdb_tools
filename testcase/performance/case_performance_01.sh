@@ -5,32 +5,33 @@
 #SBATCH -t 1:00:00
 #SBATCH -J coca_pf_01
 
-starttime=$(date +%s)
-#scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-scriptdir="/bubo/home/h10/jessada/private/hbvdb/testcase/performance"
+start_time=$(date +%s)
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#script_dir="/bubo/home/h10/jessada/private/hbvdb/testcase/performance"
+db_dir="/home/jessada/development/scilifelab/master_data/HBVDB/200danes"
+input_dir="/home/jessada/development/scilifelab/master_data/200danes/vcf"
 
-outfile=$scriptdir/out/case_performance_01_out.txt
-if [ -e $scriptdir/../../bin/DB/bvdb ]
+out_file=$scriptdir/out/case_performance_01_out.txt
+if [ -e $db_dir/bvdb ]
 then
-	rm $scriptdir/../../bin/DB/*
-	rmdir $scriptdir/../../bin/DB/
+    rm $db_dir/*
+    rmdir $db_dir
 fi
 
-if [ -e $outfile ]
+if [ -e $out_file ]
 then
-	rm $outfile
+    rm $out_file
 fi
 
-for file in $scriptdir/data/*.vcf
+for file in $input_dir/*.vcf
 do
-	echo $file >> $outfile
+    echo $file
 
-	$scriptdir/../../bin/bvd-add.pl $file
+    $script_dir/../../bin/bvd-add.pl $file --savediskspace -d $db_dir
 
-	endtime=$(date +%s)
-	timediff=$((endtime-starttime))
+    end_time=$(date +%s)
+    time_diff=$((end_time-start_time))
 
-	echo total excutetime so far $timediff seconds >> $outfile
+    echo total excutetime so far $time_diff seconds
 done
-
-
+ 

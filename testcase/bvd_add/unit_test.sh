@@ -46,5 +46,9 @@ $scriptdir/case_bvd_add_41/validate_result.sh
 $scriptdir/case_bvd_add_42/validate_result.sh
 $scriptdir/case_bvd_add_43/validate_result.sh
 $scriptdir/case_bvd_add_44/validate_result.sh
+$scriptdir/case_bvd_add_45/validate_result.sh
+$scriptdir/case_bvd_add_46/validate_result.sh
+$scriptdir/case_bvd_add_47/validate_result.sh
+$scriptdir/case_bvd_add_48/validate_result.sh
 
 
